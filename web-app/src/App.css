@@ -1,0 +1,42 @@
+.container { text-align: center; font-family: sans-serif; background: #f0f8ff; min-height: 100vh; }
+nav { display: flex; justify-content: space-between; padding: 20px; background: #fff; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+.game-area { margin-top: 50px; }
+
+// Khu vực hiển thị mèo
+.cat-stage {
+  height: 300px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+}
+
+.cat-img {
+  width: 200px;
+  transition: transform 0.2s;
+}
+
+//Hiệu ứng lơ lửng cho mèo 
+.floating {
+  animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-15px); }
+  100% { transform: translateY(0px); }
+}
+
+.controls { margin-top: 20px; gap: 10px; display: flex; justify-content: center; }
+button {
+  padding: 10px 20px;
+  font-size: 16px;
+  cursor: pointer;
+  background: #ff9a9e;
+  border: none;
+  border-radius: 10px;
+  color: white;
+  transition: transform 0.1s;
+}
+button:active { transform: scale(0.95); }
+.btn-mint { background: #4caf50; font-size: 20px; }
