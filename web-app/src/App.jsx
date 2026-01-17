@@ -7,6 +7,8 @@ import './App.css';
 const PACKAGE_ID = '0x3a4e4fcdf039350600b011605796f24ff07f02253c60cee98102d4b0e79129f1';
 const GAME_STORE_ID = '0xb1171daae888321407a0c9d03b282a44c6a64d1d6cfa5360d3d4f5938d4ee0de';
 const MODULE_NAME = 'cat_move';
+  
+
 
 const CAT_INFO = [
   { id: 0, name: 'Orange Cat', desc: 'Too much energy!' },
@@ -71,6 +73,14 @@ function App() {
     executeTx(tx, () => { alert("Welcome new cat!"); setShowShop(false); });
   };
 
+  //khúc này sửa cho mèo default đứng yên thay vì chạy lung tung
+  const [movingCats, setMovingCats] = useState({});
+  const toggleMove = (catId) => {
+    setMovingCats(prev => ({
+      ...prev,
+      [catId]: !prev[catId],
+    }));
+  };
   const createBasket = () => {
     const tx = new Transaction();
     tx.moveCall({ target: `${PACKAGE_ID}::${MODULE_NAME}::create_basket`, arguments: [] });
@@ -112,13 +122,8 @@ function App() {
       <div className="top-bar">
         {/* Góc trái: Shop & Minigame */}
         <div className="group-btn">
-<<<<<<< HEAD
-          <button className="btn-menu btn-shop" onClick={() => setShowShop(true)}>🛒 Shop</button>
-          <button className="btn-menu btn-game" onClick={() => setShowMinigame(true)}>🎮 Minigame</button>
-=======
-          <button className="btn-menu" onClick={() => setShowShop(true)}>🛒 Shop</button>
-          <button className="btn-menu" onClick={() => setShowMinigame(true)}>🎮 Minigame</button>
->>>>>>> 100042af4aac0a76afc21752437bc884861bba5a
+          <button className="btn-menu btn-shop" onClick={() => {setShowShop(true), setShowMinigame(false)}}>🛒 Shop</button>
+          <button className="btn-menu btn-game" onClick={() => {setShowMinigame(true), setShowShop(false)}}>🎮 Minigame</button>
         </div>
 
         {/* Góc phải: Giỏ cá & Ví */}
@@ -138,11 +143,7 @@ function App() {
       {/* --- POPUP SHOP --- */}
       {showShop && (
         <div className="pixel-panel center-popup">
-<<<<<<< HEAD
-          <h2 style={{marginTop: '6.8px', marginBottom: '30px',color: '#efffeb',textShadow:'2px 2px 10px black'}}>PET SHOP</h2>
-=======
-          <h2 style={{marginBottom: '30px', color: '#5d4037'}}>PET SHOP</h2>
->>>>>>> 100042af4aac0a76afc21752437bc884861bba5a
+          <h2 style={{marginTop: '40px',marginBottom: '-20px', color: 'white', textShadow: '2px 2px 10px black',}}>PET SHOP</h2>
           <div className="shop-grid">
             {CAT_INFO.map((cat) => (
               <div key={cat.id} className="shop-item" onClick={() => buyCat(cat.id)} onMouseEnter={() => setHoverDesc(cat.desc)} onMouseLeave={() => setHoverDesc("")}>
@@ -158,22 +159,13 @@ function App() {
 
       {/* --- POPUP MINIGAME (MỚI) --- */}
       {showMinigame && (
-        <div className="pixel-panel center-popup" style={{width: '400px'}}>
-<<<<<<< HEAD
-           <h2 style={{marginLeft:'5px',marginTop: '1px', marginBottom: '80px',color: '#a31f10',textShadow:'2px 2px 10px white',width:'auto'}}>MINIGAME ZONE</h2>
-           <p style={{marginTop:'-20px',marginBottom: '50px', fontSize: '11px',color:'black'}}>Play games to earn Fish 🐟</p>
+        <div className="minigame-panel center-popup" style={{width: '400px'}}>
+           <h2 style={{marginTop: '15px',marginBottom: '26px', textAlign:'center',color:'white',textShadow:'2px 2px 13px black'}}>MINIGAME ZONE</h2>
+           <h3 style={{marginTop: '50px',marginBottom: '25px', fontSize: '10.6px',height:'10px',textShadow:'3px 7px 10px black'}}>Obtain 🐟 with some minigames</h3>
            
-           <div style={{display: 'flex', flexDirection: 'column', gap: '10px'}}>
-             <button className="btn-menu btn-game">🃏 Card Flip</button>
-             <button className="btn-menu btn-game">🎣 Catch Fish</button>
-=======
-           <h2 style={{marginBottom: '20px'}}>MINIGAME ZONE</h2>
-           <p style={{marginBottom: '20px', fontSize: '10px'}}>Play games to earn Fish 🐟</p>
-           
-           <div style={{display: 'flex', flexDirection: 'column', gap: '10px'}}>
-             <button className="btn-menu">🃏 Card Flip</button>
-             <button className="btn-menu">🎣 Catch Fish</button>
->>>>>>> 100042af4aac0a76afc21752437bc884861bba5a
+           <div className='gamebutton' >
+             <button className=" btn-game-fish">🃏 Card Flip</button>
+             <button className="btn-game-fish">🎣 Catch Fish</button>
            </div>
 
            <button className="btn-action" onClick={() => setShowMinigame(false)}>Close</button>
@@ -186,18 +178,26 @@ function App() {
         const randomDelay = { animationDelay: `-${index * 5}s` };
 
         return (
-          <div key={cat.id} className="cat-wrapper" style={randomDelay}>
-            {effect === 'happy' && <div className="heart-effect">❤️</div>}
+          <div key={cat.id}
+          className={`cat-wrapper ${movingCats[cat.id] ? 'cat-moving' : ''}`}style={randomDelay}>
+          {effect === 'happy' && <div className="heart-effect">❤️</div>}
+
+          
 
             {interactingCatId === cat.id && (
-                <div className="pixel-panel cat-bubble">
+              <div className="cat-think-panel"> 
+               <div className="cat-bubble">
+                   <button className="btn-bubble" onClick={() => toggleMove(cat.id)}>  {movingCats[cat.id] ? '▶ Sit' : '⏸ Wander'}</button>
+
+            
                     <button className="btn-bubble" onClick={() => interact('feed', cat.id)}>🍖 Feed (1🐟)</button>
                     <button className="btn-bubble" onClick={() => interact('pet', cat.id)}>❤️ Pet (1🐟)</button>
                     <button className="btn-bubble" onClick={() => interact('cut', cat.id)}>✂️ Cut Nails</button>
                     <button className="btn-bubble btn-close-bubble" onClick={() => setInteractingCatId(null)}>Close</button>
-                </div>
+                    </div>
+                
+   </div>
             )}
-
             <img 
               src={`/assets/cat_${cat.breed}.png`} 
               className={`cat-sprite ${effect === 'sad' ? 'cat-sad' : ''}`}
