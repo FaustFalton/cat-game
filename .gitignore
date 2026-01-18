@@ -5,7 +5,7 @@ dist/
 build/
 .env
 .DS_Store
-
+.env.local
 
 contract/build/
 *.mv

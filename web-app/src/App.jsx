@@ -1,8 +1,7 @@
 import { ConnectButton, useCurrentAccount, useSignAndExecuteTransaction, useSuiClientQuery } from '@mysten/dapp-kit';
 import { Transaction } from '@mysten/sui/transactions';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import './App.css';
-
 // ID CŨ CỦA BẠN (Không cần thay nếu chưa deploy lại)
 const PACKAGE_ID = '0x3a4e4fcdf039350600b011605796f24ff07f02253c60cee98102d4b0e79129f1';
 const GAME_STORE_ID = '0xb1171daae888321407a0c9d03b282a44c6a64d1d6cfa5360d3d4f5938d4ee0de';
@@ -17,6 +16,150 @@ const CAT_INFO = [
   { id: 3, name: 'Calico', desc: 'Very rare and cute.' },
 ];
 
+// FishingGame Component
+
+function FishingGame( {onCatch} ) {
+  const [isReelOut, setIsReelOut] = useState(false);
+  const [baitPosition, setBaitPosition] = useState(0);
+  const reelInterval = useRef(null);
+  const gravityInterval = useRef(null);
+  const [fishPosition, setFishPosition] = useState(40);
+  const [progress, setProgress] = useState(0);
+  const baitRef = useRef(null);
+  const fishRef = useRef(null);
+  const [isHolding, setIsHolding] = useState(false);
+  
+  useEffect(() => {
+    const fishMove = setInterval(() => {
+      setFishPosition(Math.random() * 30);
+    }, 1200);
+  
+    return () => clearInterval(fishMove);
+  }, []);
+
+  useEffect(() => {
+    const progressLoop = setInterval(() => {
+      setProgress(prev => {
+        if (!isHolding) {
+          // KHÔNG HOLD → tụt
+          return Math.max(prev - 1.5, 0);
+        }
+  
+        // ĐANG HOLD
+        if (isOverlapping()) {
+          return Math.min(prev + 3, 100);
+        }
+  
+        // HOLD nhưng không trúng cá
+        return Math.max(prev - 3, 0);
+      });
+    }, 120);
+  
+    return () => clearInterval(progressLoop);
+  }, [isHolding]);
+
+  useEffect(() => {
+    if (progress >= 100) {
+      alert("🎣 You caught a fish!");
+      onCatch && onCatch();   // 🔥 GỌI CALLBACK
+    }
+  }, [progress]);
+
+  const isOverlapping = () => {
+    if (!baitRef.current || !fishRef.current) return false;
+  
+    const bait = baitRef.current.getBoundingClientRect();
+    const fish = fishRef.current.getBoundingClientRect();
+  
+    return !(
+      bait.bottom < fish.top ||
+      bait.top > fish.bottom
+    );
+  };
+  
+  const startReel = () => {
+    clearInterval(gravityInterval.current);
+    setIsReelOut(false);
+  
+    reelInterval.current = setInterval(() => {
+      setBaitPosition(prev => Math.max(prev - 3, 0));
+    }, 80);
+  };
+  const stopReel = () => {
+    clearInterval(reelInterval.current);
+    setIsReelOut(true);
+  
+    gravityInterval.current = setInterval(() => {
+      setBaitPosition(prev => {
+        if (prev >= 79) {
+          clearInterval(gravityInterval.current);
+          setIsReelOut(false);
+          return 79;
+        }
+        return prev + 2;
+      });
+    }, 80);
+  };
+
+  const reelGravity = () => {
+    setIsReelOut(true);
+    setBaitPosition(79);
+
+    setTimeout(() => {
+      setIsReelOut(false);
+    }, 1000); // Thời gian tương ứng với duration
+  };
+
+  useEffect(() => {
+    reelGravity();
+  }, []); // Chạy khi component được mount
+
+  return (
+    <div className="fishing">
+    {/* CẦN CÂU */}
+    <div className="rod"
+    onMouseDown={() => {
+      setIsHolding(true);
+      startReel();
+    }}
+    onMouseUp={() => {
+      setIsHolding(false);
+      stopReel();
+    }}
+    onMouseLeave={() => {
+      setIsHolding(false);
+      stopReel();
+    }}>
+      
+      <div className="reel">
+        <div className={`handle ${isReelOut ? 'reelout' : ''}`}></div>
+      </div>
+    </div>
+
+    {/* BIỂN + MỒI */}
+    <div className="sea">
+      <div className="area">
+      <div  ref={fishRef} className="fish" style={{top: `${fishPosition}%`,transition: 'top 0.8s linear' }}>🐟</div>
+
+        <div  ref={baitRef} className="bait"
+          style={{
+            top: `${baitPosition}%`,
+            transition: 'top 1s linear',
+          }}
+        />
+      </div>
+    </div>
+
+    {/* THANH TIẾN TRÌNH */}
+    <div className="progress">
+      <div className="area">
+        <div className="bar" style={{ height: `${progress}%` }} />
+      </div>
+    </div>
+  </div>
+  );
+}
+
 function App() {
   const account = useCurrentAccount();
   const { mutate: signAndExecute } = useSignAndExecuteTransaction();
@@ -28,6 +171,7 @@ function App() {
   const [showShop, setShowShop] = useState(false);
   const [showMinigame, setShowMinigame] = useState(false); // <--- MỚI: State cho Minigame
   const [hoverDesc, setHoverDesc] = useState("");
+  const [activeMinigame, setActiveMinigame] = useState(null);
 
   const [interactingCatId, setInteractingCatId] = useState(null); 
   const [catEffects, setCatEffects] = useState({}); 
@@ -115,6 +259,21 @@ function App() {
     }, type === 'sad' ? 5000 : 3000);
   };
 
+  const rewardFish = () => {
+    if (!basket) return;
+  
+    const tx = new Transaction();
+    tx.moveCall({
+      target: `${PACKAGE_ID}::${MODULE_NAME}::add_fish`,
+      arguments: [tx.object(basket.id)],
+    });
+  
+    executeTx(tx, () => {
+      alert("🐟 +1 Fish added to basket!");
+      setActiveMinigame(null); // đóng fishing
+    });
+  };
+  
   return (
     <div className="game-container">
       
@@ -165,13 +324,27 @@ function App() {
            
            <div className='gamebutton' >
              <button className=" btn-game-fish">🃏 Card Flip</button>
-             <button className="btn-game-fish">🎣 Catch Fish</button>
+             <button className="btn-game-fish" onClick={() => {setActiveMinigame('fishing'), setShowMinigame(false)}}>🎣 Catch Fish </button>
            </div>
 
            <button className="btn-action" onClick={() => setShowMinigame(false)}>Close</button>
         </div>
       )}
+        {activeMinigame === 'fishing' && (
+   <div className='center-popup' style={{ zIndex: 500 }}>
+     <FishingGame onCatch={rewardFish} />
 
+     <button
+        className='btn-action'
+      style={{ marginTop: '15px' }}
+      onClick={() => setActiveMinigame(null)}
+    >
+      Exit Fishing
+    </button>
+  </div>
+)}
+
+    
       {/* --- RENDER MÈO --- */}
       {cats.map((cat, index) => {
         const effect = catEffects[cat.id];
