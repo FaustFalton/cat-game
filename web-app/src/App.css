@@ -1,229 +1,221 @@
 @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
 
-/*KHÚC NÀY AI LÀM HẾT ĐÓ*/
-
+/* --- CẤU HÌNH CHUNG --- */
 body {
   margin: 0; overflow: hidden;
   font-family: 'Press Start 2P', cursive;
   user-select: none; background-color: #000;
 }
 
-
-img, .pixel-panel, .btn-mc, .stat-box {
-  image-rendering: pixelated; image-rendering: -moz-crisp-edges; image-rendering: crisp-edges;
+img, .pixel-panel, .btn-mc, .stat-box, .card, .btn-action, .btn-menu, .minigame-panel {
+  image-rendering: pixelated; 
+  image-rendering: -moz-crisp-edges; 
+  image-rendering: crisp-edges;
 }
 
 .game-container {
   width: 100vw; height: 100vh;
-  background-image: url('assets/wallpaperflare.com_wallpaper.jpg');
+  background-image: url('/assets/bg_minecraft.png'); 
   background-size: cover; background-position: center;
   position: relative;
 }
 
-/* --- TOP BAR (THANH TRÊN CÙNG) --- */
+/* --- TOP BAR --- */
 .top-bar {
   position: absolute; top: 0; left: 0; width: 100%; padding: 20px;
   display: flex; justify-content: space-between; z-index: 100;
-  box-sizing: border-box; /* Để padding không làm lố màn hình */
+  box-sizing: border-box;
 }
 
 .group-btn { display: flex; gap: 15px; align-items: center; }
 
-/* Nút Menu (Shop, Minigame) - Màu Tím */
+/* Nút Menu */
 .btn-menu {
   font-family: 'Press Start 2P'; 
-
-  background: #130c72; /* Tím đậm */
-
-  background: #6a1b9a; /* Tím đậm */
-
-  color: #fff;
-  border: 3px solid #fff;
+  background: #6a1b9a; 
+  color: #fff; border: 3px solid #fff;
   box-shadow: 4px 4px 0 #000;
-  padding: 15px 20px; /* To hơn */
-  cursor: pointer;
-  font-size: 12px;
-  text-transform: uppercase;
-  min-width: 120px;
-  text-align: center;
-  transition: transform 0.1s;
+  padding: 15px 20px; cursor: pointer;
+  font-size: 12px; text-transform: uppercase;
+  min-width: 120px; text-align: center; transition: transform 0.1s;
 }
-.btn-menu:hover { background: #3c1e44; transform: scale(1.05); }
+.btn-menu:hover { background: #8e24aa; transform: scale(1.05); }
 .btn-menu:active { transform: translate(3px, 3px); box-shadow: 1px 1px 0 #000; }
 
-/* Ô hiển thị chỉ số (Cá) - Màu Xanh */
+.btn-shop { background: #1565c0; }
+.btn-game { background: #c2450b; }
+
 .stat-box {
   font-family: 'Press Start 2P';
-  background: #d49d05; 
-  color: #fff;
-  border: 3px solid #fff;
-  box-shadow: 4px 4px 0 #000;
-  padding: 15px 20px;
-  font-size: 12px;
+  background: #2e7d32; color: #fff;
+  border: 3px solid #fff; box-shadow: 4px 4px 0 #000;
+  padding: 15px 20px; font-size: 12px;
   display: flex; align-items: center; gap: 10px;
-  min-width: 100px;
-  justify-content: center;
-  text-shadow: 2px 1px 12px black;
+  min-width: 100px; justify-content: center;
 }
 
-/* Nút Connect Wallet (Để mặc định của thư viện nhưng chỉnh lại chút) */
-/* Thư viện dApp Kit tự style, mình chỉ chỉnh margin */
-
-/* --- POPUP UI --- */
-
-.cat-think-panel{
-  background: url('/assets/cat_think.png') no-repeat center;
-width: 180px; height: 235px;
-  background-position-y:-30px; background-size:100% 130%; 
-}
+/* --- POPUP CHUNG --- */
 .pixel-panel {
   background: url('/assets/ui_panel.png') no-repeat center; 
-  background-size: 110% 100%;
-  width:250px; height: 400px; 
- text-align: center; margin-top: 0px;
- background-position-x: -43px;
+  background-size: 100% 100%;
+  padding: 40px; color: #3e2723; text-align: center;
 }
 .center-popup {
   position: absolute; top: 50%; left: 50%;
-  transform: translate(-50%, -50%); z-index: 300; width: 650px;
-  text-align: center;
+  transform: translate(-50%, -50%); z-index: 300; width: 600px;
 }
 
-/* Shop Grid */
-.btn-shop{
-  background: #1565c0;
-}
-.btn-game{
-  background: #c2450b;
-}
-.btn-game-fish{
-  font-family: 'Press Start 2P'; 
-
-  background: #130c72 center; 
-  background-position-x: -10px;
-  color: #fff;
-  border: 3px solid #fff;
-  box-shadow: 4px 4px 0 #000;
-  width: 300px; height: 45px;
-  cursor: pointer;
-  font-size: 12px;
-  text-transform: uppercase;
-  text-align: center;
-  transition: transform 0.1s;
-  margin-bottom: 3px;
-}
-.btn-game-fish:hover { background: #4e0a0a; transform: scale(1.05); }
-.btn-game-fish:active { transform: translate(3px, 3px); box-shadow: 1px 1px 0 #000; }
-.gamebutton{
-  display: flex; justify-content: center; align-items: center; gap: 10px; flex-direction: column;
-}
-/* Shop Grid */
-.shop-grid {display: flex;  gap:30px; justify-content: center; align-items: center;  text-align: center;}
-
+.shop-grid { display: flex; justify-content: space-around; gap: 20px; margin-bottom: 20px; }
 .shop-item {
-  border: 2px solid transparent; border-radius: 6px; 
-  width: 80px; cursor: pointer; transition: transform 0.1s;
-   margin-top: 50px; left: 10px;
-  flex-direction: column;
-  text-align: center;
+  border: 3px solid transparent; border-radius: 8px; padding: 10px; cursor: pointer; transition: transform 0.1s;
 }
-
-.shop-item:hover { background: rgba(8, 51, 194, 0.4); border-color: #fff; transform: scale(1.1); }
-.price-tag { background: #142091; font-size: 9px; padding: 4px; margin-top: 5px; border-radius: 4px;  }
+.shop-item:hover { background: rgba(255,255,255,0.4); border-color: #fff; transform: scale(1.1); }
+.price-tag { background: #ffcc00; font-size: 9px; padding: 4px; margin-top: 5px; border-radius: 4px; }
 .description-box {
-  background: #060852;
-  color: #fff; border: 3px solid #fff;width: 350px; margin-top: 20px;
-  background-position-x: -10px;
-  height: 40px; display: flex; align-items: center; justify-content: center; 
-  font-size: 12px; background-size: 110% 100%;
-  text-align: center;
-  margin: auto;
-  margin-bottom: 17px;
-
-}
-/* Minigame popup*/
-.minigame-panel{
-  background: url('/assets/ui_panel.png') no-repeat center;
-background-size: 120% 100%;
-height: 330px;width: 600px;
-margin-top: 0px; background-position-y: -15px; background-position-x: -45px;
-text-align: center;
+  background: #2d2d2d; color: #fff; border: 3px solid #fff; padding: 10px; 
+  min-height: 40px; display: flex; align-items: center; justify-content: center; font-size: 12px;
 }
 
-
-
-
-/* Nút nhỏ trong popup */
 .btn-action {
-
-  font-family: 'Press Start 2P'; background: #991616; color: white; border: 2px solid white;
-
   font-family: 'Press Start 2P'; background: #d32f2f; color: white; border: 2px solid white;
-
-  padding: 8px 12px; cursor: pointer; margin-top: 10px; box-shadow: 2px 2px 0 #000;
+  padding: 10px 20px; cursor: pointer; margin-top: 15px; box-shadow: 4px 4px 0 #000;
 }
-.btn-action:active { transform: translate(2px, 2px); box-shadow: none; }
 
-
-/* --- ANIMATION MÈO (Giữ nguyên) --- */
+/* --- MÈO --- */
 @keyframes walk-anim {
   0% { left: 5%; transform: scaleX(1); }    
   45% { left: 85%; transform: scaleX(1); }
-  50% { left: 85%; transform: scaleX(1); } 
-  95% { left: 5%; transform: scaleX(1); }
+  50% { left: 85%; transform: scaleX(-1); }
+  95% { left: 5%; transform: scaleX(-1); }
   100% { left: 5%; transform: scaleX(1); }
 }
-.cat-wrapper { position: absolute; bottom: 15%; width: 120px; z-index: 50; animation: walk-anim 20s linear infinite;animation-play-state: paused; }
-@keyframes float-up {
-  0% { transform: translateY(0) scale(0.5); opacity: 1; }
-  100% { transform: translateY(-80px) scale(1.5); opacity: 0; }
-}
 
-.cat-moving{
- 
-  animation-play-state: running;
+.cat-wrapper { 
+  position: absolute; bottom: 15%; width: 120px; z-index: 50; 
+  cursor: grab; display: flex; flex-direction: column; align-items: center;
 }
-.heart-effect { position: absolute; top: -50px; left: 30%; font-size: 40px; animation: float-up 1s ease-out forwards; pointer-events: none; }
-.cat-sad { filter: grayscale(100%) hue-rotate(240deg) brightness(80%) !important; transition: filter 0.5s; }
+.cat-wrapper:active { cursor: grabbing; z-index: 1000; }
+.cat-moving { animation: walk-anim 20s linear infinite; cursor: default; }
+
 .cat-sprite { width: 100%; cursor: pointer; transition: filter 0.2s; }
-.cat-fix { transform: scaleX(-1);}
 .cat-sprite:hover { filter: drop-shadow(0 0 5px white); }
+.cat-sad { filter: grayscale(100%) hue-rotate(240deg) brightness(80%) !important; }
 
-/* Menu Bong Bóng */
-.cat-bubble {
-  position: absolute; bottom: 130px; left: 0px;
-  width: 160px; z-index: 200; display: inline-flex; flex-direction: column; gap: 5px;
-  padding: 10px !important;
+.heart-effect { position: absolute; top: -50px; left: 30%; font-size: 40px; animation: float-up 1s ease-out forwards; pointer-events: none; }
+@keyframes float-up { to { transform: translateY(-80px) scale(1.5); opacity: 0; } }
+
+.cat-think-panel {
+  position: absolute; bottom: 100%; left: 50%; transform: translateX(-50%);
+  background: url('/assets/cat_think.png') no-repeat center;
+  width: 180px; height: 235px; background-size: 100% 100%; z-index: 200; pointer-events: auto;
 }
-
-/* Nút trong bong bóng */
+.cat-bubble {
+  position: absolute; top: 40px; left: 0; width: 100%;
+  display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 10px;
+}
 .btn-bubble {
   font-family: 'Press Start 2P'; background: #1565c0; color: white; border: 2px solid white;
-  padding: 8px; cursor: pointer; font-size: 10px; text-align: left;
+  padding: 8px; cursor: pointer; font-size: 10px; width: 80%;
 }
-.btn-bubble:hover { background: #1e88e5; }
+.btn-close-bubble { background: #b71c1c; }
 
-.btn-close-bubble { background: #b71c1c; text-align: center; }
-.shop-grid { height: auto !important; margin: 20px 0 !important; }
+/* ========================================================= */
+/* --- MINIGAME FULL SCREEN (CODE ĐÃ SỬA LỖI) --- */
+/* ========================================================= */
 
-.pixel-panel .shop-item { 
-  border-color: #46266b !important; 
-  background: rgba(0,0,0,0.3) !important; 
-  text-align: center !important;
+.minigame-overlay {
+  position: fixed; /* Bắt buộc cố định */
+  top: 0; left: 0; right: 0; bottom: 0;
+  width: 100vw; height: 100vh;
+  
+  /* Nền tối đè lên game cũ */
+  background-color: rgba(20, 20, 30, 0.95) !important;
+  background-image: url('/assets/bg_minecraft.png');
+  background-blend-mode: multiply; /* Trộn màu đen vào nền */
+  background-size: cover;
+  
+  z-index: 99999; /* Đè lên tất cả mọi thứ */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 }
 
-.pixel-panel .shop-item:hover { 
-  background: rgba(158, 21, 21, 0.6) !important; 
-  border-color: yellow !important; 
+/* Nút thoát game ở góc */
+.btn-quit-game {
+  position: absolute; top: 30px; right: 30px;
+  background: #d32f2f; color: white; border: 3px solid white;
+  padding: 15px 20px; cursor: pointer; font-family: 'Press Start 2P';
+  box-shadow: 4px 4px 0 #000; z-index: 100000;
+}
+.btn-quit-game:active { transform: translate(3px, 3px); box-shadow: none; }
+
+/* Thanh HUD (Điểm & Thời gian) */
+.game-hud {
+  position: absolute; top: 30px; left: 30px;
+  display: flex; gap: 30px; z-index: 100000;
 }
 
-.pixel-panel .price-tag { 
-  background: rgb(49, 28, 40) !important; 
-  color: white !important; 
-  border: 2px solid white !important; 
-  text-align: center !important; 
+.hud-box {
+  background: #3e2723; border: 4px solid #fff; color: #fff;
+  padding: 15px; border-radius: 8px; font-size: 16px;
+  box-shadow: 5px 5px 0 #000; min-width: 150px; text-align: center;
 }
 
-.center-popup { max-width: 90vw; }
+/* Lưới Thẻ Bài */
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr); /* 4 cột */
+  gap: 20px; margin-top: 60px;
+}
 
-.btn-close-bubble { background: #b71c1c; text-align: center; }
+/* THẺ BÀI */
+.card {
+  width: 90px; height: 120px;
+  perspective: 1000px; cursor: pointer;
+  background: transparent; /* Sửa lỗi nền trắng */
+}
+
+.card-inner {
+  position: relative; width: 100%; height: 100%;
+  text-align: center; transition: transform 0.6s;
+  transform-style: preserve-3d;
+}
+
+.card.flipped .card-inner { transform: rotateY(180deg); }
+
+.card-front, .card-back {
+  position: absolute; width: 100%; height: 100%;
+  backface-visibility: hidden;
+  border: 4px solid #fff; border-radius: 10px;
+  box-shadow: 4px 4px 0 rgba(0,0,0,0.5);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 40px; 
+}
+
+/* MẶT ÚP (Tím) */
+.card-front {
+  background: #6a1b9a; color: white;
+  background-image: linear-gradient(45deg, #7b1fa2 25%, transparent 25%, transparent 75%, #7b1fa2 75%, #7b1fa2), linear-gradient(45deg, #7b1fa2 25%, transparent 25%, transparent 75%, #7b1fa2 75%, #7b1fa2);
+  background-size: 20px 20px;
+  background-position: 0 0, 10px 10px;
+}
+
+/* MẶT NGỬA (Trắng) */
+.card-back { background: #fff; transform: rotateY(180deg); }
+
+/* Màn hình kết quả */
+.result-screen {
+  background: url('/assets/ui_panel.png') no-repeat center; background-size: 100% 100%;
+  padding: 60px; text-align: center; animation: popIn 0.3s ease; width: 500px;
+}
+@keyframes popIn { from { transform: scale(0); } to { transform: scale(1); } }
+
+.result-title { font-size: 30px; color: #3e2723; margin-bottom: 20px; }
+.btn-large {
+  font-family: 'Press Start 2P'; padding: 15px 30px; font-size: 14px; margin: 10px;
+  cursor: pointer; border: 3px solid #3e2723; color: white; display: block; width: 100%;
+}
+.btn-claim { background: #4caf50; }
+.btn-restart { background: #2196f3; }
+.btn-exit { background: #f44336; }
