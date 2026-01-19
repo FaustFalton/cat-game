@@ -1,4 +1,4 @@
-module contract::cat_move {
+module 0x0::cat_move {
     use sui::object::{Self, UID};
     use sui::transfer;
     use sui::tx_context::{Self, TxContext};
@@ -55,4 +55,11 @@ module contract::cat_move {
     public entry fun cut_nails(cat: &mut Cat) {
         cat.happiness = 0; // Mèo buồn thiu
     }
+<<<<<<< HEAD
+=======
+
+    public entry fun reward_fish(basket: &mut FishBasket) {
+        basket.amount = basket.amount + 1; // Thưởng 1 con cá
+    }
+>>>>>>> update-ui
 }
