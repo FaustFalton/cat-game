@@ -321,11 +321,14 @@ function App() {
 
         {showShop && (
           <div className="pixel-panel center-popup">
-            <h2 style={{marginTop: '40px',marginBottom: '-20px', color: 'white', textShadow: '2px 2px 10px black'}}>PET SHOP</h2>
+            <h2 style={{marginTop: '5px',marginBottom: '20px', color: 'white', textShadow: '2px 2px 10px black'}}>PET SHOP</h2>
             <div className="shop-grid">
               {CAT_INFO.map((cat) => (
-                <div key={cat.id} className="shop-item" onClick={() => buyCat(cat.id)} onMouseEnter={() => setHoverDesc(cat.desc)} onMouseLeave={() => setHoverDesc("")}>
-                  <img src={`/assets/cat_${cat.id}.png`} width="80" />
+                <div key={cat.id} className="shop-item" 
+                onClick={() => buyCat(cat.id)} onMouseEnter={() => setHoverDesc(cat.desc)} onMouseLeave={() => setHoverDesc("")}>
+                  <div className="shop-cat-preview frame-idle"
+  style={{ backgroundImage: `url(/assets/cat_${cat.id}.png)` }} />
+
                   <div className="price-tag">0.1 SUI</div>
                 </div>
               ))}
