@@ -30,6 +30,9 @@ function App() {
   const [hoverDesc, setHoverDesc] = useState("");
   const [interactingCatId, setInteractingCatId] = useState(null); 
   const [catEffects, setCatEffects] = useState({}); 
+  //chỉnh cho mèo đi
+  const [catPos, setCatPos] = useState({});
+  const [catDir, setCatDir] = useState({});
 
   // Drag State
   const [catPositions, setCatPositions] = useState({}); 
@@ -165,15 +168,71 @@ function App() {
   };
 
   const interact = (action, catId) => {
-    if ((action === 'feed' || action === 'pet') && (!basket || basket.amount <= 0)) return alert("No fish left!");
+    if ((action === 'feed' || action === 'pet') && (!basket || basket.amount <= 0)) {
+      return alert("No fish left! Need to catch more.");
+    }
+  
     const tx = new Transaction();
-    if (action === 'feed') tx.moveCall({ target: `${PACKAGE_ID}::${MODULE_NAME}::feed_cat`, arguments: [tx.object(catId), tx.object(basket.id)] });
-    else if (action === 'pet') tx.moveCall({ target: `${PACKAGE_ID}::${MODULE_NAME}::pet_cat`, arguments: [tx.object(catId), tx.object(basket.id)] });
-    else if (action === 'cut') tx.moveCall({ target: `${PACKAGE_ID}::${MODULE_NAME}::cut_nails`, arguments: [tx.object(catId)] });
+  
+    if (action === 'feed') {
+      tx.moveCall({target: `${PACKAGE_ID}::${MODULE_NAME}::feed_cat`, arguments: [tx.object(catId), tx.object(basket.id)],});
+   
+    } else if (action === 'pet') {
+      tx.moveCall({target: `${PACKAGE_ID}::${MODULE_NAME}::pet_cat`, arguments: [tx.object(catId), tx.object(basket.id)],});
+    
+    } else if (action === 'cut') {
+      tx.moveCall({target: `${PACKAGE_ID}::${MODULE_NAME}::cut_nails`, arguments: [tx.object(catId)],});
+    }
+  
     triggerEffect(catId, action === 'cut' ? 'sad' : 'happy');
-    setInteractingCatId(null);
-    executeTx(tx, () => console.log("Interaction Success"));
+    executeTx(tx, () => {
+      console.log("Interaction Success");
+  
+      setTimeout(() => {
+        setInteractingCatId(null);
+      }, action === 'cut' ? 1500 : 1200);
+    });
   };
+  // Set speed cho mèo đi
+  useEffect(() => {
+    const interval = setInterval(() => {setCatPos(prev => {
+    const next = { ...prev };
+  
+     Object.keys(movingCats).forEach(catId => {
+          if (!movingCats[catId]) return;
+  
+          const dir = catDir[catId];
+          let x = prev[catId] ?? 100;
+  
+          const SPEED = 3.5;
+          const LEFT_LIMIT = 20;
+          const RIGHT_LIMIT = window.innerWidth - 120;
+  
+          if (dir === 'right') {
+            x += SPEED;
+           
+            if (x >= RIGHT_LIMIT) {
+             
+              x = RIGHT_LIMIT;
+              setCatDir(d => ({ ...d, [catId]: 'left' }));
+            }
+          } else {
+            x -= SPEED;
+            if (x <= LEFT_LIMIT) {
+              x = LEFT_LIMIT;
+              setCatDir(d => ({ ...d, [catId]: 'right' }));
+            }
+          }
+  
+          next[catId] = x;
+        });
+  
+        return next;
+      });
+    }, 30);
+  
+    return () => clearInterval(interval);
+  }, [movingCats, catDir]);
 
   const triggerEffect = (catId, type) => {
     setCatEffects(prev => ({ ...prev, [catId]: type }));
@@ -244,6 +303,7 @@ function App() {
              </div>
            )}
         </div>
+        
       )}
 
       {/* MAIN GAME */}
@@ -274,35 +334,47 @@ function App() {
             <button className="btn-action" onClick={() => setShowShop(false)}>Close</button>
           </div>
         )}
-
+        
+        {/* --- RENDER MÈO --- */}
         {cats.map((cat, index) => {
-          const effect = catEffects[cat.id];
-          const randomDelay = { animationDelay: `-${index * 5}s` };
-          const position = catPositions[cat.id]; 
-          const catStyle = position ? { left: position.x, top: position.y, bottom: 'auto', animation: 'none' } : randomDelay; 
-          return (
-            <div key={cat.id} className={`cat-wrapper ${movingCats[cat.id] ? 'cat-moving' : ''}`} style={movingCats[cat.id] ? randomDelay : catStyle} onMouseDown={(e) => handleMouseDown(e, cat.id)}>
-              {effect === 'happy' && <div className="heart-effect">❤️</div>}
-              {interactingCatId === cat.id && (
-                <div className="cat-think-panel"> 
-                  <div className="cat-bubble">
-                      <button className="btn-bubble" onClick={() => { toggleMove(cat.id); if (!movingCats[cat.id]) { const n = { ...catPositions }; delete n[cat.id]; setCatPositions(n); } }}>  
-                          {movingCats[cat.id] ? '▶ Sit' : '⏸ Wander'}
-                      </button>
-                      <button className="btn-bubble" onClick={() => interact('feed', cat.id)}>🍖 Feed</button>
-                      <button className="btn-bubble" onClick={() => interact('pet', cat.id)}>❤️ Pet</button>
-                      <button className="btn-bubble" onClick={() => interact('cut', cat.id)}>✂️ Cut Nails</button>
-                      <button className="btn-bubble btn-close-bubble" onClick={() => setInteractingCatId(null)}>Close</button>
-                  </div>
-                </div>
-              )}
-              <img src={`/assets/cat_${cat.breed}.png`} className={`cat-sprite ${effect === 'sad' ? 'cat-sad' : ''}`} onDragStart={(e) => e.preventDefault()} onClick={(e) => { if (!isDragging) setInteractingCatId(interactingCatId === cat.id ? null : cat.id) }} />
+        const effect = catEffects[cat.id];
+         const dir = catDir[cat.id] || 'right';
+        const moving = movingCats[cat.id];
+
+        return (
+          <div key={cat.id} className="cat-wrapper" style={{
+            left: catPos[cat.id] ?? 100,
+            bottom: '25%',
+            position: 'absolute',}} >
+
+          {/* === POPUP (KHÔNG BỊ TRANSFORM) === */}
+          {interactingCatId === cat.id && (
+            <div className="cat-think-panel">
+              <div className="cat-bubble">
+                <button className="btn-bubble" onClick={() => toggleMove(cat.id)}> {movingCats[cat.id] ? '▶ Sit' : '⏸ Wander'}</button>
+                <button className="btn-bubble" onClick={() => interact('feed', cat.id)}> 🍖 Feed (1🐟)</button>
+                <button className="btn-bubble" onClick={() => interact('pet', cat.id)}> ❤️ Pet (1🐟)</button>
+                <button className="btn-bubble" onClick={() => interact('cut', cat.id)}>✂️ Cut Nails</button>
+                <button className="btn-bubble btn-close-bubble" onClick={() => setInteractingCatId(null)}> Close </button>
+              </div>
             </div>
-          )
+          )}
+        
+          {/* === MÈO (CÓ TRANSFORM) === */}
+          {effect === 'happy' && <div className="heart-effect">❤️</div>}
+        
+          <div className={`Character ${moving ? 'is-moving' : 'is-idle'} ${ dir === 'right' ? 'face-right' : 'face-left' }`}>
+           
+          <img src={`/assets/cat_${cat.breed}.png`} 
+          className={`Character_spritesheet pixelart ${effect === 'sad' ? 'cat-sad' : '' }`}
+             
+             onClick={() => setInteractingCatId(interactingCatId === cat.id ? null : cat.id) } />
+          </div>
+        </div>  
+         );
         })}
       </div>
-    </div>
+      </div>
   );
 }
-
 export default App;

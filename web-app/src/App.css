@@ -82,20 +82,12 @@ img, .pixel-panel, .btn-mc, .stat-box, .card, .btn-action, .btn-menu, .minigame-
 }
 
 /* --- MÈO --- */
-@keyframes walk-anim {
-  0% { left: 5%; transform: scaleX(1); }    
-  45% { left: 85%; transform: scaleX(1); }
-  50% { left: 85%; transform: scaleX(-1); }
-  95% { left: 5%; transform: scaleX(-1); }
-  100% { left: 5%; transform: scaleX(1); }
-}
-
-.cat-wrapper { 
-  position: absolute; bottom: 15%; width: 120px; z-index: 50; 
-  cursor: grab; display: flex; flex-direction: column; align-items: center;
+.cat-wrapper {
+  position: absolute;
+  pointer-events: auto;
+ overflow: visible;
 }
 .cat-wrapper:active { cursor: grabbing; z-index: 1000; }
-.cat-moving { animation: walk-anim 20s linear infinite; cursor: default; }
 
 .cat-sprite { width: 100%; cursor: pointer; transition: filter 0.2s; }
 .cat-sprite:hover { filter: drop-shadow(0 0 5px white); }
@@ -104,19 +96,22 @@ img, .pixel-panel, .btn-mc, .stat-box, .card, .btn-action, .btn-menu, .minigame-
 .heart-effect { position: absolute; top: -50px; left: 30%; font-size: 40px; animation: float-up 1s ease-out forwards; pointer-events: none; }
 @keyframes float-up { to { transform: translateY(-80px) scale(1.5); opacity: 0; } }
 
-.cat-think-panel {
-  position: absolute; bottom: 100%; left: 50%; transform: translateX(-50%);
+.cat-think-panel{
   background: url('/assets/cat_think.png') no-repeat center;
-  width: 180px; height: 235px; background-size: 100% 100%; z-index: 200; pointer-events: auto;
+  width: 180px; height: 235px;
+  background-position-y:-30px; background-size:100% 130%; 
 }
 .cat-bubble {
-  position: absolute; top: 40px; left: 0; width: 100%;
-  display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 10px;
+  position: absolute; bottom: 10px; left: 0px;
+  width: 160px; z-index: 200; display: inline-flex; flex-direction: column; gap: 5px;
+  padding: 10px !important; margin-top: 30px;
 }
+/* Nút trong popup*/
 .btn-bubble {
   font-family: 'Press Start 2P'; background: #1565c0; color: white; border: 2px solid white;
-  padding: 8px; cursor: pointer; font-size: 10px; width: 80%;
+  padding: 8px; cursor: pointer; font-size: 10px; text-align: left;
 }
+.btn-bubble:hover { background: #1e88e5; }
 .btn-close-bubble { background: #b71c1c; }
 
 /* ========================================================= */
@@ -219,3 +214,85 @@ img, .pixel-panel, .btn-mc, .stat-box, .card, .btn-action, .btn-menu, .minigame-
 .btn-claim { background: #4caf50; }
 .btn-restart { background: #2196f3; }
 .btn-exit { background: #f44336; }
+
+/*Animation cho mèo*/
+:root {
+  --pixel-size: 4;
+}
+
+.Character {
+  width: calc(32px * var(--pixel-size));
+  height: calc(32px * var(--pixel-size));
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.Character_spritesheet {
+  width: calc(128px * var(--pixel-size));
+  position: absolute;
+  left: 0;
+  top: 0;
+}
+
+.pixelart {
+  image-rendering: pixelated;
+}
+
+/* ===== HƯỚNG ===== */
+.Character {
+  position: absolute;
+  width: calc(32px * var(--pixel-size));
+  height: calc(32px * var(--pixel-size));
+  overflow: hidden;
+  cursor: pointer;
+}
+
+/* spritesheet */
+.Character_spritesheet {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: calc(128px * var(--pixel-size));
+}
+
+/* hướng */
+.Character.face-right .Character_spritesheet {
+  top: calc(-32px * var(--pixel-size));
+}
+
+.Character.face-left .Character_spritesheet {
+  top: calc(-96px * var(--pixel-size));
+}
+
+/* ===== ANIMATION ===== */
+.is-moving .Character_spritesheet {
+  animation: moveSpritesheet 0.8s steps(4) infinite;
+}
+
+.is-idle .Character_spritesheet {
+  animation: none;
+}
+
+@keyframes moveSpritesheet {
+  from {
+    transform: translate3d(0,0,0);
+  }
+  to {
+    transform: translate3d(-100%,0,0);
+  }
+}
+
+/*UI mèo cho shop*/
+.shop-cat-preview {
+  width: calc(12px * var(--pixel-size));
+  height: calc(12px * var(--pixel-size));
+  background-size: calc(40px * var(--pixel-size)) ;
+  background-repeat: no-repeat;
+  image-rendering: pixelated;
+  transform: scale(3); 
+  background-position-x: 8px;
+}
+
+.shop-cat-preview.frame-idle {
+  background-position: -32px 0px;
+}
