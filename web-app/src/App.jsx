@@ -8,14 +8,14 @@ const GAME_STORE_ID = '0xc3252f40a3e03fd975ac66bd685125188490ab3c6f82b8c547e2f9b
 
 // --- DATABASE ---
 const CAT_DB = [
-    { id: 0, name: 'Orange', rarity: 'R', origin: 'Backyard', personality: 'Lazy' },
-    { id: 1, name: 'Black', rarity: 'R', origin: 'Witch House', personality: 'Mysterious' },
+    { id: 0, name: 'Gray', rarity: 'R', origin: 'Adopted', personality: 'Introvert' },
+    { id: 1, name: 'DarkPurple', rarity: 'R', origin: 'Witch House', personality: 'Mysterious' },
     { id: 2, name: 'White', rarity: 'R', origin: 'Hospital', personality: 'Gentle' },
-    { id: 3, name: 'Grey', rarity: 'R', origin: 'City', personality: 'Active' },
-    { id: 4, name: 'Tuxedo', rarity: 'R', origin: 'Mansion', personality: 'Elegant' },
-    { id: 5, name: 'Siamese', rarity: 'SR', origin: 'Thailand', personality: 'Chatty' },
-    { id: 6, name: 'Calico', rarity: 'SR', origin: 'Farm', personality: 'Lucky' },
-    { id: 7, name: 'Bengal', rarity: 'SR', origin: 'Jungle', personality: 'Wild' },
+    { id: 3, name: 'Orange', rarity: 'R', origin: 'City', personality: 'Funny' },
+    { id: 4, name: 'Light', rarity: 'R', origin: 'Countryside', personality: 'LaidBack' },
+    { id: 5, name: 'Black', rarity: 'SR', origin: 'Chruch', personality: 'Chatty' },
+    { id: 6, name: 'Tuxedo', rarity: 'SR', origin: 'UpperClass', personality: 'Luxury' },
+    { id: 7, name: 'ThreeTones', rarity: 'SR', origin: 'Jungle', personality: 'Wild' },
     { id: 8, name: 'Golden', rarity: 'SSR', origin: 'Heaven', personality: 'Divine' }
 ];
 const ACC_DB = [
@@ -41,7 +41,7 @@ function App() {
   const [musicVol, setMusicVol] = useState(() => parseFloat(localStorage.getItem('musicVol') ?? '0.5'));
   const [sfxVol, setSfxVol] = useState(() => parseFloat(localStorage.getItem('sfxVol') ?? '0.5'));
   const bgmRef = useRef(new Audio('/assets/sounds/bgm_main.mp3'));
-
+  const sfxRef = useRef({});
   // --- GAME STATE ---
   const [localFish, setLocalFish] = useState(() => parseInt(localStorage.getItem('fish') || '200'));
   
@@ -117,17 +117,45 @@ function App() {
 
   const playSfx = (filename) => {
       if (sfxVol <= 0) return;
-      const audio = new Audio(`/assets/sounds/${filename}`);
-      audio.volume = sfxVol;
-      audio.play().catch(() => {});
-  };
+      const audio = sfxRef.current[filename];
+      if (!audio) return;
+      audio.pause();           
+     audio.currentTime = 0;   
+    audio.volume = sfxVol;
+
+  const playSound = audio.play();
+  if (playSound !== undefined) {
+    playSound.catch(() => {});
+  }
+};
 
   // Wrapper cho các nút bấm (Sound + Logic + Start BGM if needed)
   const clickSound = () => {
+    requestAnimationFrame(() => {
       playSfx('ui_click.mp3');
-      if (bgmRef.current.paused && musicVol > 0) bgmRef.current.play().catch(()=>{});
+    });
+  
+    if (bgmRef.current.paused && musicVol > 0) {
+      bgmRef.current.play().catch(()=>{});
+    }
   };
+  
 
+  useEffect(() => {
+    const sounds = [
+      'ui_click.mp3',
+      'game_win.mp3',
+      'slot_spin.mp3',
+      'cat_meow.mp3',
+      'cat_eat.mp3',
+    ];
+  
+    sounds.forEach(name => {
+      const audio = new Audio(`/assets/sounds/${name}`);
+      audio.preload = 'auto';
+      sfxRef.current[name] = audio;
+    });
+  }, []);
   // --- SYNC ---
   useEffect(() => { localStorage.setItem('fish', localFish); }, [localFish]);
   useEffect(() => { localStorage.setItem('inventory', JSON.stringify(inventory)); }, [inventory]);
@@ -421,7 +449,7 @@ function App() {
               </div>
           </div>
           <div className="sui-top-up">
-              <span style={{fontSize:'8px'}}>Need Fish?</span>
+              <span style={{fontSize:'12px',color:'#fff0bd',textShadow:'2px 1px 3px #3d1800'}}>Need Fish?</span>
               <button className="btn-action" style={{margin:0, width:'auto'}} onClick={buyFish}>1 SUI = 100 FISH</button>
           </div>
       </div>
@@ -487,17 +515,19 @@ function App() {
               
               {!selectedGame ? (
                   <>
-                      <h2>ARCADE CENTER</h2>
-                      <p style={{fontSize:'10px', color:'cyan'}}>Daily Limit: {gameCount}/10 plays</p>
+                      <h2 style={{textShadow:'3px 4px 2px #5c69ff',background:'#1c0602',alignItems: 'center', display:'flex',
+                         height:'40px', marginTop:'20px',border:'3px solid #8c786b'}}>ARCADE CENTER</h2>
+                      <p style={{fontSize:'15px', color:'yellow',textShadow:'2px 5px 4px black'}}>Daily Limit: {gameCount}/10 plays</p>
                       <div className="arcade-menu">
+            
                           <button className="game-card-btn" onClick={()=>{startMemoryGame(); setSelectedGame('card');}}>
-                              <span style={{fontSize:'20px'}}>🃏</span><br/>MEMORY<br/>(Win 5🐟)
+                              <span style={{fontSize:'25px'}}>🃏</span><h2 style={{marginTop:"5px", marginBottom:"5px", color:'#edb51c', textShadow:'2px 1px 5px #632204 '}}>MEMORY</h2>(Win 5🐟)
                           </button>
                           <button className="game-card-btn" onClick={()=>{clickSound(); setSelectedGame('coin')}}>
-                              <span style={{fontSize:'20px'}}>🪙</span><br/>COIN FLIP<br/>(x2 Bet)
+                              <span style={{fontSize:'25px'}}>📀</span><h2 style={{marginTop:"2px", marginBottom:"1px", color:'#23bd00', textShadow:'2px 1px 5px #1d018a '}}>COIN FLIP</h2>(x2 Bet)
                           </button>
                           <button className="game-card-btn" onClick={()=>{clickSound(); setSelectedGame('slot')}}>
-                              <span style={{fontSize:'20px'}}>🎰</span><br/>SLOTS<br/>(Max x10)
+                              <span style={{fontSize:'25px'}}>🎰</span><h2 style={{marginTop:"2px", marginBottom:"1px", color:'#ad0227', textShadow:'2px 1px 5px black '}}>SLOTS</h2>(Max x10)
                           </button>
                       </div>
                   </>
@@ -654,7 +684,7 @@ function App() {
              const moving = movingCats[cat.uuid];
              const dir = catDir[cat.uuid] || 'right';
              return (
-             <div key={cat.uuid} className="cat-wrapper" style={{ left: `${catPos[cat.uuid]}%`, bottom: '25%' }}>
+             <div key={cat.uuid} className="cat-wrapper" style={{ left: `${catPos[cat.uuid]}%`, bottom: '-50%', top:'90%'  }}>
                 {interactingCatId === cat.uuid && (
                     <div className="cat-think-panel">
                         <button onClick={()=>interact('feed', cat.uuid)}>Feed (1🐟)</button>
@@ -664,10 +694,12 @@ function App() {
                         <button style={{background:'#c62828'}} onClick={()=>{clickSound(); setInteractingCatId(null)}}>Close</button>
                     </div>
                 )}
-                <div className={`Character ${moving ? 'is-moving' : 'is-idle'} ${dir==='right'?'face-right':'face-left'}`} onClick={() => {clickSound(); setInteractingCatId(interactingCatId === cat.uuid ? null : cat.uuid)}}>
+                <div className={`cat-aura  ${cat.rarity === 'SR' ? 'cat-sr' : ''} ${cat.rarity === 'SSR' ? 'cat-ssr' : ''}`}> 
+                <div className={`Character ${moving ? 'is-moving' : 'is-idle'} ${dir==='right'?'face-right':'face-left'} `} onClick={() => {clickSound(); setInteractingCatId(interactingCatId === cat.uuid ? null : cat.uuid)}}>
                     <img src={`/assets/cat_${cat.id}.png`} className="Character_spritesheet" alt="cat" />
                 </div>
-                <div style={{textAlign:'center', fontSize:'8px', textShadow:'1px 1px 0 #000', marginTop:'5px'}}>{cat.name}</div>
+                </div>
+                <div style={{justifyContent:'center', fontSize:'13px', textShadow:'1px 3px 1px black    ', marginTop:'1px', color:'#ffddba'}}>{cat.name}</div>
              </div>
         )})}
     </div>
