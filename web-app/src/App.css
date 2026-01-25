@@ -1,281 +1,346 @@
 @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
 
-/* --- GENERAL --- */
-body {
-  margin: 0; overflow: hidden;
-  user-select: none; background-color: #111;
-  font-family: 'Press Start 2P', cursive;
-  color: white;
-}
-
-.game-container {
-  width: 100vw; height: 100vh;
-  /* Đảm bảo bạn đã có ảnh bg_minecraft.png trong thư mục public/assets */
-  background: #1a1a1a url('/assets/bg_minecraft.png') no-repeat center/cover;
-  position: relative; background-position-y:-320px ;
-}
-
-/* --- UI FRAME & POPUP --- */
-.minigame-overlay {
-  position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-  background: rgba(0, 0, 0, 0.85); z-index: 3000;
-  display: flex; align-items: center; justify-content: center;
-}
-
-.pixel-panel {
-  background-color: #3e2723; border: 4px solid #fff;
-  box-shadow: 6px 6px 0 #000; padding: 20px; text-align: center;
-  min-width: 500px; max-width: 90%; position: relative;
-  image-rendering: pixelated;
-}
+/* --- GLOBAL SETTINGS --- */
+body { background: #1a1a1a; margin: 0; overflow: hidden; user-select: none; color: white; font-family: 'Press Start 2P', cursive; }
+.game-container { width: 100vw; height: 100vh; background: url('/assets/bg_minecraft.png') no-repeat center/cover; position: relative; background-position-y: -320px; }
+.minigame-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 3000; display: flex; align-items: center; justify-content: center; }
+.pixel-panel { background: #3e2723; border: 4px solid #fff; padding: 20px; text-align: center; position: relative; image-rendering: pixelated; box-shadow: 8px 8px 0 black; width: 700px; max-width: 90vw; }
 
 /* --- BUTTONS --- */
-button {
-  font-family: 'Press Start 2P', cursive; cursor: pointer; 
-  border: 3px solid #fff; color: rgb(255, 255, 255); padding: 10px; text-transform: uppercase; 
-  font-size: 10px; margin: 5px; box-shadow: 3px 3px 0 #000; transition: 0.1s;
-}
+button { font-family: inherit; cursor: pointer; border: 3px solid #fff; padding: 10px; text-transform: uppercase; font-size: 10px; margin: 5px; box-shadow: 3px 3px 0 #000; color: white; background-color: #333; text-shadow: 1px 1px 0 #000; }
 button:active { transform: translate(2px, 2px); box-shadow: 1px 1px 0 #000; }
-button:disabled { filter: grayscale(1); cursor: not-allowed; }
-
-.btn-action { background: #2e7d32; width: 100%; }
-.btn-close { background: #c62828; position: absolute; top: 10px; right: 10px; z-index: 100; padding: 5px 10px;}
-.btn-menu { background: #1565c0; min-width: 80px; font-size: 10px !important; color: white; }
+.btn-close { background: #c62828; position: absolute; top: 10px; right: 10px; width: 30px; height: 30px; font-size: 12px; z-index: 10; }
+.btn-action { background: #2e7d32; width: 100%; font-size: 14px; padding: 15px; }
 
 /* --- TOP BAR --- */
-.top-bar { 
-  position: absolute; top: 0; left: 0; width: 100%; padding: 15px; 
-  display: flex; justify-content: space-between; z-index: 2000; 
-  pointer-events: none; box-sizing: border-box; 
-}
-.group-btn { pointer-events: auto; display: flex; gap: 10px; align-items: center; }
-.stat-box { 
-    background: #fbc02d; color: #3e2723; border: 2px solid white; 
-    padding: 10px; font-size: 12px; font-weight: bold; 
-    display: flex; align-items: center; gap: 5px;
-}
+.top-bar { position: absolute; top: 0; left: 0; width: 100%; padding: 15px; display: flex; justify-content: space-between; z-index: 2000; box-sizing: border-box; }
+.group-btn { display: flex; gap: 8px; align-items: center; }
+.btn-menu { min-width: 70px; font-size: 10px !important; padding: 8px; }
+.setting-btn { width: 35px !important; min-width: unset; text-align: center; padding: 8px; }
+.stat-box { padding: 8px 12px; font-size: 10px; border: 2px solid white; display: flex; align-items: center; min-width: 60px; justify-content: center; }
+.meow-token { background: #6a1b9a; border-color: #ba68c8; }
+.fish-token { background: #0277bd; border-color: #4fc3f7; }
 
-/* --- GACHA SHOP UI --- */
-.gacha-panel { width: 600px; display: flex; flex-direction: column; gap: 15px; }
-.gacha-tabs { display: flex; gap: 5px; margin-bottom: -4px; padding-left: 10px; }
-.tab-btn {
-  background: #2d2d2d; color: #aaa; border: 4px solid #fff; border-bottom: none;
-  padding: 10px 20px; cursor: pointer; font-family: inherit; font-size: 10px;
-  position: relative; top: 4px; z-index: 1;
-}
-.tab-btn.active { background: #3e2723; color: white; top: 0; z-index: 10; padding-bottom: 14px; text-shadow: 0 0 5px gold; }
+/* --- BLIND BOX --- */
+.gacha-panel { width: 100%; display: flex; flex-direction: column; gap: 15px; align-items: center; }
+.gacha-banner.blind-box { width: 90%; height: 180px; border: 4px solid white; background: radial-gradient(circle, #ffab91, #d84315); display: flex; align-items: center; justify-content: center; position: relative; }
+.blind-box-visual { font-size: 80px; animation: floatBox 2s infinite ease-in-out; text-shadow: 4px 4px 0 #3e2723; }
+.banner-info { position: absolute; bottom: 5px; font-size: 10px; background: rgba(0,0,0,0.5); padding: 5px 10px; border-radius: 5px; }
+.gacha-actions { display: flex; justify-content: center; gap: 20px; width: 100%; }
 
-.gacha-banner {
-  width: 100%; height: 120px; border: 4px solid #fff; box-shadow: inset 0 0 20px rgba(0,0,0,0.5);
-  display: flex; flex-direction: column; align-items: center; justify-content: center;
-  margin-bottom: 10px; position: relative; overflow: hidden;
+/* FIX ALIGNMENT FOR GACHA BUTTONS */
+.btn-roll { 
+    width: 140px; height: 80px; 
+    background: #2e7d32; font-size: 12px; 
+    display: flex; flex-direction: column; align-items: center; justify-content: center; /* Centering */
+    gap: 5px;
 }
-.gacha-banner.cat { background: linear-gradient(135deg, #4a148c, #7b1fa2); }
-.gacha-banner.acc { background: linear-gradient(135deg, #006064, #0097a7); }
-.banner-title { font-size: 24px; color: gold; text-shadow: 2px 2px 0 #000; margin-bottom: 10px; }
-.banner-info { font-size: 8px; color: #eee; background: rgba(0,0,0,0.5); padding: 5px 10px; border-radius: 10px; }
-
-.gacha-actions { display: flex; justify-content: center; gap: 20px; }
-.btn-roll {
-  background: #2e7d32; border: 4px solid #fff; color: white; padding: 15px; width: 140px; cursor: pointer;
-  display: flex; flex-direction: column; align-items: center; gap: 5px; position: relative;
-}
-.btn-roll:hover { transform: scale(1.05); }
-.btn-roll.premium { background: linear-gradient(to bottom, #f57f17, #fbc02d); border-color: gold; color: #3e2723; }
-.guarantee-tag { font-size: 6px; background: #d32f2f; color: white; padding: 2px 4px; position: absolute; top: -10px; right: -5px; border: 1px solid white; }
-.sui-top-up { margin-top: 20px; border-top: 2px dashed #aaa; padding-top: 15px; display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.2); padding: 10px; border-radius: 8px; }
-
-/* Result Screen */
+.btn-roll.premium { background: linear-gradient(to bottom, #f57f17, #fbc02d); color: black; border-color: gold; text-shadow: none; }
 .result-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin: 20px 0; justify-items: center; }
-.result-item { width: 60px; height: 70px; background: #fff; border: 3px solid #000; display: flex; flex-direction: column; align-items: center; justify-content: center; animation: popIn 0.3s ease-out; }
-.result-item.SSR { border-color: gold; box-shadow: 0 0 10px gold; background: #fffde7; }
-.result-item.SR { border-color: cyan; box-shadow: 0 0 5px cyan; }
-.item-img { width: 32px; height: 32px; background-size: 128px auto; image-rendering: pixelated; background-position: 0 0; }
-.item-name { font-size: 6px; margin-top: 5px; color: black; max-width: 100%; overflow: hidden; white-space: nowrap; }
-@keyframes popIn { 0% { transform: scale(0); } 80% { transform: scale(1.1); } 100% { transform: scale(1); } }
+.result-item { width: 70px; height: 90px; background: white; border: 2px solid black; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+.result-item.SSR { border-color: gold; box-shadow: 0 0 10px gold; }
+.item-img { width: 32px; height: 32px; background-size: 128px auto; image-rendering: pixelated; transform: scale(1.5); }
+@keyframes floatBox { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
 
-/* --- COLLECTION BOOK UI --- */
-.book-container {
-  width: 700px; height: 450px; background: #5d4037; border: 4px double #8d6e63;
-  display: flex; padding: 20px; color: #3e2723; box-sizing: border-box; position: relative;
-}
-.book-page { flex: 1; padding: 6px; display: flex; flex-direction: column; align-items: center; border: 1px solid #8d6e63; margin: 5px; background: #efebe9; }
-.book-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 30px; height: 250px; overflow-y: auto; width: 100%; margin-left: 25px; }
-.book-item { width: 60px; height: 50px; border: 2px solid #8d6e63; background: rgba(255,255,255,0.4); display: flex; align-items: center; justify-content: center; }
-.book-item.locked { background: #000; opacity: 0.5; filter: grayscale(1); }
-.pixel-icon { width: 32px; height: 32px; background-repeat: no-repeat; background-position: 0 0; background-size: 128px auto; image-rendering: pixelated; transform: scale(2); background-position-y: -5px;}
+/* --- ROLLING ANIMATION --- */
+.rolling-container { display: flex; flex-direction: column; align-items: center; }
+.rolling-box { font-size: 80px; color: gold; width: 150px; height: 150px; background: radial-gradient(#d84315, #bf360c); border: 5px solid white; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 30px gold; }
+.shake-anim { animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) infinite both; }
+.rolling-text { margin-top: 20px; font-size: 24px; color: white; animation: blink 0.5s infinite; text-shadow: 2px 2px 0 black; }
+@keyframes shake { 10%, 90% { transform: translate3d(-2px, 0, 0) rotate(-5deg); } 20%, 80% { transform: translate3d(4px, 0, 0) rotate(5deg); } 30%, 50%, 70% { transform: translate3d(-6px, 0, 0) rotate(-5deg); } 40%, 60% { transform: translate3d(6px, 0, 0) rotate(5deg); } }
+@keyframes blink { 50% { opacity: 0; } }
 
-/* --- DETAIL VIEW --- */
-.cat-portrait { width: 120px; height: 110px; background-color: #fff; border: 4px solid #3e2723; margin: 20px; background-size: 400% 900%; background-position-x:0px; background-position-y: -15px; image-rendering: pixelated; margin-top: 10px;}
-.rarity-badge { font-size: 20px; font-weight: bold; text-shadow: 1px 1px 0 #000; }
-.info-page { align-items: flex-start; padding-left: 30px; justify-content: center; }
-.info-row { display: flex; justify-content: space-between; width: 100%; margin-bottom: 15px; border-bottom: 2px dotted #8d6e63; padding-bottom: 5px; font-size: 10px; }
-.action-row { display: flex; width: 100%; justify-content: space-between; align-items: center; margin-top: 20px; gap: 5px; }
-.btn-nav { width: 40px; background: #8d6e63; border-color: #5d4037; }
-.btn-equip { flex: 1; background: #307533; font-size: 10px; }
-.btn-equip.unequip { background: #c62828; }
-.btn-close-detail { margin-top: auto; align-self: center; background: #3e2723; border-color: #8d6e63; color: white; }
-
-/* --- HOUSE GRID --- */
-.house-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; max-height: 250px; overflow-y: auto; margin: 20px 0; background: #110d0d; padding:10px; border: 2px solid #555; }
-.house-slot { border: 2px solid #666; padding: 5px; cursor: pointer; position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 60px; }
-.house-slot:hover { background: #444; }
-.house-slot.active { border-color: #00e676; background: rgba(0, 230, 118, 0.2); }
-.equipped-badge { position: absolute; top: 2px; left: 2px; background: #00e676; color: black; font-size: 6px; padding: 2px; font-weight: bold; }
-
-/* --- MINIGAME --- */
-.card-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin: 0 auto; width: fit-content; }
-.card { width: 60px; height: 80px; perspective: 1000px; cursor: pointer; }
+/* --- ARCADE --- */
+.arcade-panel { width: 800px; min-height: 500px; }
+.arcade-menu { display: flex; gap: 20px; justify-content: center; margin-top: 40px; }
+.game-card-btn { width: 140px; height: 140px; background: #212121; gap: 10px; font-size: 12px; color: white; border: 3px solid #555; }
+.game-card-btn:hover { background: #424242; border-color: gold; transform: scale(1.05); }
+.game-stage { margin-top: 10px; width: 100%; display: flex; flex-direction: column; align-items: center; }
+.game-msg { font-size: 16px; margin-top: 15px; color: gold; height: 20px; }
+.bet-controls input { width: 80px; padding: 5px; text-align: center; }
+.card-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+.card { width: 70px; height: 90px; perspective: 1000px; cursor: pointer; }
 .card-inner { width: 100%; height: 100%; position: relative; transition: transform 0.6s; transform-style: preserve-3d; }
 .card.flipped .card-inner { transform: rotateY(180deg); }
-.card-front { background: #6a1b9a; position: absolute; width: 100%; height: 100%; backface-visibility: hidden; display: flex; align-items: center; justify-content: center; font-size: 20px; border: 2px solid white; }
-.card-back { background: #fff; color: black; position: absolute; width: 100%; height: 100%; backface-visibility: hidden; transform: rotateY(180deg); display: flex; align-items: center; justify-content: center; font-size: 20px; border: 2px solid white; }
+.card-front { background: #6a1b9a; position: absolute; width: 100%; height: 100%; backface-visibility: hidden; border: 2px solid white; display: flex; align-items: center; justify-content: center; }
+.card-back { background: white; color: black; position: absolute; width: 100%; height: 100%; backface-visibility: hidden; transform: rotateY(180deg); display: flex; align-items: center; justify-content: center; font-size: 24px; }
+.coin { width: 100px; height: 100px; position: relative; transform-style: preserve-3d; transition: transform 0.5s; }
+.side { position: absolute; width: 100%; height: 100%; border-radius: 50%; backface-visibility: hidden; border: 4px solid white; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: bold; color: #3e2723; }
+.side.heads { background: gold; } .side.tails { background: silver; transform: rotateY(180deg); }
+.coin-flip-container { margin-top: 20px; display: flex; flex-direction: column; align-items: center; gap: 20px; }
+.slot-machine-wrapper { transform: scale(1.1); margin-top: 20px; display: flex; flex-direction: column; align-items: center; }
+.slot-machine-bg { width: 220px; height: 140px; background: #d32f2f; border: 4px solid gold; border-radius: 10px; position: relative; display: flex; align-items: center; justify-content: center; }
+.reels-window { display: flex; gap: 4px; background: white; padding: 5px; border: 3px inset #555; height: 50px; align-items: center; }
+.reel { width: 35px; height: 45px; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+.reel img { width: 100%; object-fit: contain; }
+.slot-handle { position: absolute; right: -25px; top: 20px; width: 15px; height: 60px; background: #555; border-radius: 4px; border: 2px solid #222; transform-origin: top center; transition: transform 0.2s; }
+.slot-handle::before { content: ''; position: absolute; top: -8px; left: -4px; width: 23px; height: 23px; background: red; border-radius: 50%; border: 2px solid #222; }
+.slot-handle.pulling { animation: pullHandle 0.5s ease-in-out; }
+@keyframes pullHandle { 0% { transform: rotateX(0); } 50% { transform: rotateX(180deg); } 100% { transform: rotateX(0); } }
 
-/* --- ARCADE NEW --- */
-.arcade-panel { width: 60px; min-height: 400px; display: flex; flex-direction: column; align-items: center; }
-.arcade-menu {background: #130b0b;height: 140px; ;display: flex; gap: 25px; margin-top: 60px; border: 2px solid rgb(207, 129, 100); }
-.game-card-btn { margin-top: 15px;width: 135px; height: 110px; background: #212121; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px; font-size: 10px; transition: 0.2s; border: 2px solid #555; }
-.game-card-btn:hover { background: #424242; transform: scale(1.1); border-color: gold; }
-.game-stage { width: 100%; display: flex; flex-direction: column; align-items: center; }
-.game-header { width: 100%; display: flex; justify-content: space-between; margin-bottom: 20px; border-bottom: 2px dashed #555; padding-bottom: 10px; }
-.bet-controls { margin-top: 20px; display: flex; gap: 10px; align-items: center; background: rgba(0,0,0,0.3); padding: 10px; border-radius: 5px; }
-.bet-controls.vertical { flex-direction: column; }
-.bet-controls input { width: 80px; padding: 5px; font-family: inherit; text-align: center; }
-.game-msg { margin-top: 15px; font-size: 14px; color: gold; text-shadow: 2px 2px 0 #000; height: 20px; font-weight: bold; }
+/* --- BOOK (Scaled) --- */
+.book-container { width: 750px; height: 500px; background: #5d4037; border: 5px double #8d6e63; display: flex; padding: 20px; color: #3e2723; position: relative; /* REQUIRED FOR CLOSE BTN */ }
+.book-page { flex: 1; padding: 10px; background: #efebe9; border: 1px solid #8d6e63; margin: 5px; display: flex; flex-direction: column; align-items: center; }
+.book-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 15px; overflow-y: auto; height: 400px; width: 100%; }
+.book-item { width: 70px; height: 70px; border: 2px solid #8d6e63; display: flex; align-items: center; justify-content: center; background: rgba(255,255,255,0.5); cursor: pointer; }
 
-/* --- SLOT MACHINE --- */
-.slot-machine-container { display: flex; flex-direction: column; align-items: center; }
-.slot-bg { width: 300px; height: 250px; background-size: contain; background-repeat: no-repeat; background-position: center; position: relative; image-rendering: pixelated; }
-.reels-window { gap:8px; position: absolute; top: 110px; left:84px; width: 132px; height: 60px; display: flex; justify-content: space-around; align-items: center; overflow: hidden; border: 2px inset #555; }
-.reel { width: 40px; height: 40px; background: white; display: flex; align-items: center; justify-content: center}
-.reel img { width: 100%; height: 100%; object-fit: contain; }
-.reel.blur img { filter: blur(2px); transform: translateY(-5px); transition: 0.1s; }
-.btn-spin { background: #e53935; color: white; border: 2px solid white; font-size: 14px; padding: 5px 15px; box-shadow: 0 4px 0 #b71c1c; }
-.btn-spin:active { transform: translateY(4px); box-shadow: 0 0 0; }
-.btn-spin.disabled { filter: grayscale(1); pointer-events: none; }
-
-/* --- COIN FLIP --- */
-.coin-flip-container { display: flex; flex-direction: column; align-items: center; margin-top: 20px; }
-.coin { width: 100px; height: 100px; position: relative; transform-style: preserve-3d; transition: transform 0.5s ease-out; }
-.coin.heads { transform: rotateY(0deg); }
-.coin.tails { transform: rotateY(180deg); }
-.coin.flipping { animation: spinCoin 0.3s infinite linear; }
-.side { position: absolute; width: 100%; height: 100%; border-radius: 50%; backface-visibility: hidden; border: 4px solid #fff; box-shadow: inset 0 0 10px rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: bold; color: #3e2723; }
-.side.heads { background: gold; }
-.side.heads::after { content: 'HEADS'; }
-.side.tails { background: silver; transform: rotateY(180deg); }
-.side.tails::after { content: 'TAILS'; }
-@keyframes spinCoin { 0% { transform: rotateY(0deg); } 100% { transform: rotateY(360deg); } }
-
-/* --- CATS ON SCREEN (FIXED) --- */
-.cat-wrapper { 
-    position: absolute; 
-    width: 32px; height: 32px; /* Container kích thước chuẩn */
-    transition: left 0.5s linear; 
-    cursor: pointer; z-index: 50; 
-}
-:root{
-  --pixel-size: 10px;
-}
-/* QUAN TRỌNG: Cắt phần thừa của Spritesheet */
-.Character { 
+/* FIX IMAGE ALIGNMENT IN GRID */
+.pixel-icon { 
     width: 32px; height: 32px; 
-    overflow: hidden; /* Dòng này sửa lỗi hiện nguyên bầy mèo */
-    position: relative;
-    transform: scale(4.5); 
-    transform-origin: bottom center; /* Scale từ chân mèo */
-    image-rendering: pixelated; /* Giữ ảnh pixel sắc nét khi phóng to */
+    background-size: 128px auto; 
+    image-rendering: pixelated; 
+    transform: scale(1.8); 
+    background-position: center bottom; /* KEY FIX: ALIGN BOTTOM */
+    background-repeat: no-repeat;
 }
 
-.Character_spritesheet { 
-    width: 128px; /* Kích thước gốc của file ảnh */
-    display: block; 
-    position: absolute; /* Để di chuyển ảnh bên trong khung */
-    top: 0; left: 0;
+/* Detail View */
+.book-container.detail-view { width: 700px; height: 450px; }
+.cat-portrait { width: 130px; height: 130px; border: 4px solid #3e2723; margin: 10px; background-size: 400% 900%; background-position-y: -15px; }
+.stat-row { font-size: 12px; margin-bottom: 10px; width: 100%; display: flex; justify-content: space-between; border-bottom: 1px dotted #8d6e63; }
+.stat-desc { font-size: 10px; margin-top: 20px; text-align: center; }
+
+/* --- HOUSE WITH FILTER --- */
+.filter-bar {
+    display: flex; gap: 5px; margin-bottom: 10px;
+}
+.filter-bar button {
+    background: #555; font-size: 8px; padding: 5px 10px; min-width: 40px;
+}
+.filter-bar button.active {
+    background: #0288d1; border-color: gold;
 }
 
-/* Animation */
+.house-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin: 10px 0; background: #222; padding: 10px; max-height: 350px; overflow-y: auto; }
+.house-slot { border: 2px solid #555; height: 90px; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; cursor: pointer; }
+.house-slot.active { border-color: #00e676; background: rgba(0, 230, 118, 0.1); }
+.hunger-bar { width: 70%; height: 4px; background: #000; margin-top: 8px; border: 1px solid white; }
+.hunger-bar div { height: 100%; transition: width 0.5s; }
+.equipped-badge { position: absolute; top: 0; right: 0; background: #00e676; color: black; font-size: 8px; padding: 2px; }
+
+/* --- CAT VISUALS --- */
+.cat-wrapper { position: absolute; width: 32px; height: 32px; transition: left 0.5s linear; cursor: pointer; z-index: 50; }
+.Character { width: 32px; height: 32px; overflow: hidden; position: relative; transform: scale(3.5); transform-origin: bottom center; image-rendering: pixelated; }
+.Character_spritesheet { width: 128px; position: absolute; top: 0; left: 0; display: block; }
 .is-moving .Character_spritesheet { animation: moveSpritesheet 0.8s steps(4) infinite; }
-.is-idle .Character_spritesheet { animation: none; margin-left: 0; }
+.face-right .Character_spritesheet { top: -32px; } 
+.face-left .Character_spritesheet { top: -96px; } 
+@keyframes moveSpritesheet { from { transform: translateX(0px); } to { transform: translateX(-128px); } }
+.cat-sr { filter: drop-shadow(0 0 4px cyan); }
+.cat-ssr { filter: drop-shadow(0 0 6px gold); }
+.bubble-hungry { position: absolute; top: -40px; left: 10px; background: white; padding: 4px; border-radius: 50%; font-size: 12px; animation: bounce 1s infinite; z-index: 100; border: 2px solid black; }
+.cat-think-panel { position: absolute; bottom: 100px; left: -45px; background: white; border: 2px solid black; padding: 8px; width: 130px; display: flex; flex-direction: column; gap: 5px; color: black; z-index: 200; }
+.cat-think-panel button { background-color: #1565c0; color: white; font-size: 10px; padding: 6px; text-align: left; border: 1px solid black; box-shadow: none; margin: 0; }
+.cat-think-panel button:hover { background-color: #0d47a1; }
+.claim-box { position: absolute; bottom: 20px; right: 20px; background: #2e7d32; border: 3px solid white; padding: 10px; color: white; cursor: pointer; z-index: 90; text-align: center; image-rendering: pixelated; }
+.claim-box:hover { transform: scale(1.1); }
+.mining-sparkle { position: absolute; top: -10px; right: 0; animation: riseUp 2s infinite; opacity: 0; }
+@keyframes riseUp { 0% { transform: translateY(0); opacity: 1; } 100% { transform: translateY(-20px); opacity: 0; } }
+@keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
+.settings-panel { width: 400px; }
+.setting-row { display: flex; flex-direction: column; width: 100%; text-align: left; gap: 5px; margin-bottom: 15px; color: gold; font-size: 12px; }
 
-/* Các hướng nhìn - Sử dụng margin hoặc transform để dịch chuyển ảnh */
-.face-right .Character_spritesheet { top: -32px; }
-.face-left .Character_spritesheet { top: -96px; }
-
-@keyframes moveSpritesheet { 
-    from { transform: translateX(0px); } 
-    to { transform: translateX(-128px); } 
-}
-/*hieu ung rare cho meo*/
-.cat-sr {
-  filter: drop-shadow(0 0 4px rgba(0, 255, 255, 0.8))
-          drop-shadow(0 0 8px rgba(0, 255, 255, 0.4));
-}
-.cat-ssr {
-  position: relative;
-  filter: drop-shadow(0 0 6px gold)
-          drop-shadow(0 0 14px rgba(255, 215, 0, 0.8));
-}
-
-.cat-ssr::after {
-  content: '';
-  position: absolute;
-  inset: -4px;
-  background: linear-gradient(
-    120deg,
-    transparent 30%,
-    rgba(255,255,255,0.6),
-    transparent 70%
-  );
-  animation: shimmer 2.5s infinite;
-  pointer-events: none;
+/* --- FIX 1: CHỈNH LẠI HIỂN THỊ MÈO TRONG KHUNG (QUAN TRỌNG) --- */
+.pixel-icon { 
+    width: 32px; height: 32px; 
+    /* Giữ nguyên size gốc của sprite sheet */
+    background-size: 128px auto; 
+    image-rendering: pixelated; 
+    
+    /* Phóng to mèo lên */
+    transform: scale(2); 
+    
+    /* KEY FIX: Đưa ảnh về góc 0 0 để lấy mặt trước (Front Face) */
+    background-position: 0 0; 
+    background-repeat: no-repeat;
+    
+    /* Căn giữa div */
+    margin: auto;
 }
 
-@keyframes shimmer {
-  0%   { transform: translateX(-100%); }
-  50%  { transform: translateX(100%); }
-  100% { transform: translateX(100%); }
+/* --- FIX 2: NÚT X TRONG BOOK --- */
+/* Đặt vị trí tương đối cho container để nút X bám theo */
+.book-container { 
+    position: relative; 
+    /* Các thuộc tính cũ giữ nguyên */
+    width: 750px; height: 500px; background: #5d4037; border: 5px double #8d6e63; display: flex; padding: 20px; color: #3e2723; 
 }
-/* Bubble Popup */
-.cat-think-panel { position: absolute; bottom: 100px; left: 30px; background: white; border: 2px solid black; color: black; padding: 5px; width: 130px; display: flex; flex-direction: column; gap: 2px; border-radius: 5px;  }
-.cat-think-panel button {background-position-x: 10px; background: #123788; color: rgb(255, 255, 255); border: none; font-size: 10px; padding: 6px; text-align: left; margin: 3px; }
-/* --- SETTINGS POPUP --- */
-.setting-btn {
-    font-size: 14px !important;
-    background: #424242;
-    border: 2px solid #aaa;
-    width: 40px !important; min-width: unset;
-}
-.setting-btn:hover { background: #616161; }
 
-.settings-panel {
-    width: 300px;
-    display: flex; flex-direction: column; gap: 20px;
+/* Chỉnh nút X nằm gọn trong góc phải */
+.book-container .btn-close {
+    top: 15px;      /* Cách lề trên */
+    right: 15px;    /* Cách lề phải */
+    width: 35px;
+    height: 35px;
+    z-index: 100;   /* Luôn nằm trên cùng */
 }
-.setting-row {
-    display: flex; flex-direction: column; gap: 5px; text-align: left;
-}
-.setting-row label { color: gold; font-size: 12px; }
-.setting-row input[type=range] {
-    width: 100%; cursor: pointer;
-}
-/* --- SETTINGS POPUP --- */
-.setting-btn {
-    font-size: 14px !important;
-    background: #424242;
-    border: 2px solid #aaa;
-    width: 40px !important; min-width: unset;
-}
-.setting-btn:hover { background: #616161; }
 
-.settings-panel {
-    width: 300px;
-    display: flex; flex-direction: column; gap: 20px;
+/* --- FIX 3: CĂN GIỮA CHỮ GACHA --- */
+.btn-roll { 
+    width: 140px; height: 80px; 
+    background: #2e7d32; font-size: 12px; 
+    /* Dùng Flexbox để căn giữa tuyệt đối */
+    display: flex; 
+    flex-direction: column; 
+    align-items: center; 
+    justify-content: center; 
+    gap: 8px; /* Khoảng cách giữa dòng chữ và số tiền */
+    text-align: center;
 }
-.setting-row {
-    display: flex; flex-direction: column; gap: 5px; text-align: left;
+.btn-roll span {
+    display: block;
+    line-height: 1.2;
 }
-.setting-row label { color: gold; font-size: 12px; }
-.setting-row input[type=range] {
-    width: 100%; cursor: pointer;
+
+/* --- FIX 4: HOUSE SLOT (Để mèo nằm chính giữa ô) --- */
+.house-slot { 
+    border: 2px solid #555; 
+    height: 90px; 
+    display: flex; 
+    flex-direction: column; 
+    align-items: center; 
+    justify-content: center; /* Căn giữa dọc */
+    position: relative; 
+    cursor: pointer; 
+    gap: 5px; /* Khoảng cách giữa mèo và thanh đói */
+}
+/* =========================================
+   RESPONSIVE DESIGN (MOBILE & TABLET FIXES)
+   ========================================= */
+
+/* --- 1. GLOBAL FIXES --- */
+* { box-sizing: border-box; } /* Đảm bảo padding không làm vỡ khung */
+
+/* --- 2. TABLET & SMALL LAPTOP (Max Width 1024px) --- */
+@media screen and (max-width: 1024px) {
+    .pixel-panel, .arcade-panel, .book-container, .gacha-panel {
+        width: 90vw !important; /* Chiếm 90% chiều ngang màn hình */
+        height: auto !important;
+        max-height: 85vh; /* Không cao quá màn hình */
+        overflow-y: auto; /* Nếu dài quá thì cho cuộn dọc */
+    }
+}
+
+/* =========================================
+   RESPONSIVE DESIGN V2 (FIXED FOR IPAD & MOBILE)
+   ========================================= */
+
+/* --- 1. SỬA BACKGROUND & CONTAINER --- */
+/* Đảm bảo background luôn full màn hình bất kể thiết bị */
+.game-container {
+    width: 100vw;
+    height: 100vh;
+    background-size: cover; /* Ảnh luôn phủ kín */
+    background-position: center bottom; /* Căn đáy để luôn thấy đất */
+    background-attachment: fixed; /* Cố định nền khi cuộn */
+    overflow: hidden;
+}
+
+/* --- 2. TABLET & IPAD (Màn hình từ 768px đến 1366px) --- */
+@media screen and (max-width: 1366px) {
+    
+    /* Tăng kích thước nút Top Bar cho dễ bấm trên cảm ứng */
+    .top-bar {
+        padding: 20px;
+        width: 100%;
+        box-sizing: border-box;
+    }
+    .btn-menu {
+        min-width: 90px;
+        font-size: 12px !important; /* Chữ to hơn */
+        padding: 12px;
+    }
+    .setting-btn {
+        width: 45px !important;
+        height: 45px;
+        font-size: 20px !important;
+    }
+    .stat-box {
+        font-size: 12px;
+        padding: 10px;
+    }
+
+    /* Các bảng (Panel) tự co giãn theo chiều ngang tablet */
+    .pixel-panel, .gacha-panel, .book-container, .arcade-panel {
+        width: 85vw !important; /* Chiếm 85% chiều ngang */
+        max-width: 700px; /* Không to quá mức */
+        height: auto !important;
+        max-height: 80vh; /* Tránh bị tràn màn hình dọc */
+        overflow-y: auto; /* Cho phép cuộn nội dung bên trong */
+    }
+
+    /* Chỉnh lại Grid trong House & Book */
+    .house-grid, .book-grid, .result-grid {
+        grid-template-columns: repeat(4, 1fr); /* 4 cột thay vì 5 */
+        gap: 10px;
+    }
+}
+
+/* --- 3. MOBILE (Điện thoại - Dưới 768px) --- */
+@media screen and (max-width: 768px) {
+    
+    /* Top Bar xếp dọc để đỡ chật */
+    .top-bar {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+    .group-btn {
+        width: 100%;
+        justify-content: space-between;
+    }
+
+    /* Bảng chiếm gần hết màn hình điện thoại */
+    .pixel-panel, .gacha-panel, .book-container, .arcade-panel {
+        width: 95vw !important;
+        padding: 10px;
+    }
+
+    /* Grid giảm còn 3 cột */
+    .house-grid, .book-grid, .result-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+    .card-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+
+    /* Chữ trong Blind Box */
+    .btn-roll {
+        width: 110px; 
+        font-size: 10px;
+    }
+
+    /* Book chuyển thành view dọc */
+    .book-container {
+        flex-direction: column;
+    }
+    .book-page {
+        width: 100%;
+        margin-bottom: 20px;
+    }
+
+    /* Arcade Menu dọc */
+    .arcade-menu {
+        flex-direction: column;
+    }
+    .game-card-btn {
+        width: 100%;
+        flex-direction: row;
+        height: 80px;
+        font-size: 14px;
+    }
+
+    /* Mèo trên màn hình */
+    .cat-wrapper {
+        bottom: 18% !important; /* Đẩy lên cao để không bị ngón tay che */
+    }
+    .Character {
+        transform: scale(2.5); /* Mèo nhỏ lại chút */
+    }
+    
+    /* Nút Claim to hơn */
+    .claim-box {
+        bottom: 80px; /* Đẩy lên trên các nút điều hướng ảo của điện thoại */
+        transform: scale(1.0);
+    }
 }
