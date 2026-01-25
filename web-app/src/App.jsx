@@ -11,50 +11,50 @@ const MINING_RATE = {
     'SSR': { fish: 1.5, meow: 0.03, label: 'Divine' }
 };
 
-// --- DATABASE ---
+// --- CORE SYSTEM: 2-AXIS PERSONALITY (10 TYPES) ---
+// W: Warmth (Hòa hợp), C: Chaos (Gây rối)
+const PERSONALITY_MAP = {
+    'Gentle':       { w: 2,  c: -1, desc: "Peaceful glue of the team." },
+    'Chill':        { w: 1,  c: -2, desc: "Reduces stress significantly." },
+    'Angry':        { w: -2, c: 2,  desc: "High chaos, high drama." },
+    'Naughty':      { w: -1, c: 2,  desc: "Troublemaker." },
+    'Calm':         { w: 2,  c: -2, desc: "Perfect stabilizer." },
+    'Lazy':         { w: 0,  c: -1, desc: "Harmless." },
+    'Smart':        { w: 1,  c: 1,  desc: "Calculated chaos." },
+    'Dominant':     { w: -2, c: 2,  desc: "Demands attention." },
+    'Affectionate': { w: 2,  c: 0,  desc: "Pure love." },
+    'Cold':         { w: -2, c: -1, desc: "Distant but stable." }
+};
+
+// --- DATABASE (Mapped to 10 Personalities) ---
 const CAT_DB = [
-    { id: 0, name: 'Gray', rarity: 'R', gender: '♂', personality: 'Lazy', desc: 'Loves sleeping.' },
-    { id: 1, name: 'DarkPurple', rarity: 'R', gender: '♀', personality: 'Mysterious', desc: 'Stares at ghosts.' },
-    { id: 2, name: 'White', rarity: 'R', gender: '♀', personality: 'Gentle', desc: 'Purrs loudly.' },
-    { id: 3, name: 'Orange', rarity: 'R', gender: '♂', personality: 'Chaotic', desc: 'Knocks over cups.' },
-    { id: 4, name: 'Light', rarity: 'R', gender: '♀', personality: 'Friendly', desc: 'Greets everyone.' },
-    { id: 5, name: 'Black', rarity: 'SR', gender: '♂', personality: 'Cool', desc: 'A ninja cat.' },
-    { id: 6, name: 'Tuxedo', rarity: 'SR', gender: '♂', personality: 'Classy', desc: 'Always dressed up.' },
-    { id: 7, name: 'ThreeTones', rarity: 'SR', gender: '♀', personality: 'Wild', desc: 'Hunter of bugs.' },
-    { id: 8, name: 'Golden', rarity: 'SSR', gender: '✨', personality: 'Divine', desc: 'Brings fortune.' },
-    { id: 9, name: 'Pink', rarity: 'SR', gender: '♀', personality: 'Sweet', desc: 'Smells like candy.' },
-    { id: 10, name: 'Rainbow', rarity: 'SSR', gender: '🌈', personality: 'Magical', desc: 'Leaves glitter trails.' },
-    { id: 11, name: 'Alien', rarity: 'SSR', gender: '👽', personality: 'Weird', desc: 'Beep boop meow.' },
-    { id: 12, name: 'Purple', rarity: 'R', gender: '♂', personality: 'Calm', desc: 'Likes lavender.' }
+    { id: 0, name: 'Gray', rarity: 'R', personality: 'Lazy' },
+    { id: 1, name: 'DarkPurple', rarity: 'R', personality: 'Cold' },
+    { id: 2, name: 'White', rarity: 'R', personality: 'Gentle' },
+    { id: 3, name: 'Orange', rarity: 'R', personality: 'Naughty' },
+    { id: 4, name: 'Light', rarity: 'R', personality: 'Affectionate' },
+    { id: 5, name: 'Black', rarity: 'SR', personality: 'Calm' },
+    { id: 6, name: 'Tuxedo', rarity: 'SR', personality: 'Smart' },
+    { id: 7, name: 'ThreeTones', rarity: 'SR', personality: 'Chill' },
+    { id: 8, name: 'Golden', rarity: 'SSR', personality: 'Dominant' },
+    { id: 9, name: 'Pink', rarity: 'SR', personality: 'Affectionate' },
+    { id: 10, name: 'Rainbow', rarity: 'SSR', personality: 'Smart' },
+    { id: 11, name: 'Alien', rarity: 'SSR', personality: 'Angry' },
+    { id: 12, name: 'Purple', rarity: 'R', personality: 'Chill' }
 ];
 
 const ACC_DB = [
     { id: 100, name: 'Bow', rarity: 'R' }, { id: 101, name: 'Bell', rarity: 'R' },
     { id: 102, name: 'Hat', rarity: 'R' }, { id: 103, name: 'Scarf', rarity: 'R' },
-    { id: 104, name: 'Glasses', rarity: 'R' }, { id: 105, name: 'Crown', rarity: 'SR' },
-    { id: 106, name: 'Wings', rarity: 'SR' }, { id: 107, name: 'Rainbow', rarity: 'SSR' }
-];
-
-const SLOT_SYMBOLS = [
-    { id: 0, img: '/assets/slot-symbol1.png', val: 7 }, 
-    { id: 1, img: '/assets/slot-symbol2.png', val: 3 }, 
-    { id: 2, img: '/assets/slot-symbol3.png', val: 2 }, 
-    { id: 3, img: '/assets/slot-symbol4.png', val: 1 }, 
 ];
 const CARD_ICONS = ['🐟', '🦴', '🐭', '🦀', '🧶', '🐱'];
+const SLOT_SYMBOLS = [{ id: 0, img: '/assets/slot-symbol1.png', val: 7 }, { id: 1, img: '/assets/slot-symbol2.png', val: 3 }, { id: 2, img: '/assets/slot-symbol3.png', val: 2 }, { id: 3, img: '/assets/slot-symbol4.png', val: 1 }];
 
 function App() {
   const account = useCurrentAccount();
   const { mutate: signAndExecute } = useSignAndExecuteTransaction();
   
-  // --- AUDIO & REFS ---
-  const [showSettings, setShowSettings] = useState(false);
-  const [musicVol, setMusicVol] = useState(() => parseFloat(localStorage.getItem('musicVol') ?? '0.5'));
-  const [sfxVol, setSfxVol] = useState(() => parseFloat(localStorage.getItem('sfxVol') ?? '0.5'));
-  const bgmRef = useRef(new Audio('/assets/sounds/bgm_main.mp3'));
-  const sfxRef = useRef({});
-
-  // --- GAME STATE ---
+  // --- STATE ---
   const [localFish, setLocalFish] = useState(() => parseFloat(localStorage.getItem('fish') || '200'));
   const [localMeow, setLocalMeow] = useState(() => parseFloat(localStorage.getItem('meow') || '0'));
   
@@ -76,31 +76,43 @@ function App() {
   const [pityCounter, setPityCounter] = useState(() => parseInt(localStorage.getItem('pity') || '0'));
   const [pendingRewards, setPendingRewards] = useState({ fish: 0, meow: 0 });
 
-  // --- UI STATE ---
+  // --- TEAM SYNERGY STATE (2 AXIS) ---
+  const [teamStats, setTeamStats] = useState({ 
+      w: 0, c: 0, 
+      score: 0, 
+      multiplier: 1, 
+      label: "Neutral" 
+  });
+
+  // UI State
   const [activeTab, setActiveTab] = useState(null); 
   const [gachaResults, setGachaResults] = useState(null);
   const [isRolling, setIsRolling] = useState(false);
   const [bookDetailCat, setBookDetailCat] = useState(null);
-  
-  // NEW: FILTER STATE
   const [filterRarity, setFilterRarity] = useState('ALL');
+  const [inspectCat, setInspectCat] = useState(null); 
 
-  // --- INTERACTION ---
+  // Interaction State
   const [catPos, setCatPos] = useState({});
   const [catDir, setCatDir] = useState({});
   const [movingCats, setMovingCats] = useState({});
   const [interactingCatId, setInteractingCatId] = useState(null);
 
-  // --- ARCADE STATE ---
-  const [gameCount, setGameCount] = useState(() => {
-     const today = new Date().toDateString();
-     if (localStorage.getItem('lastPlayedDate') !== today) return 0;
-     return parseInt(localStorage.getItem('gameCount') || '0');
-  });
+  // Audio & Settings
+  const bgmRef = useRef(new Audio('/assets/sounds/bgm_main.mp3'));
+  const sfxRef = useRef({});
+  const [musicVol, setMusicVol] = useState(0.5);
+  const [sfxVol, setSfxVol] = useState(0.5);
+  const [showSettings, setShowSettings] = useState(false);
+
+  // Other Game States
+  const [gameCount, setGameCount] = useState(() => parseInt(localStorage.getItem('gameCount') || '0'));
+  const [lastLoginDate, setLastLoginDate] = useState(() => localStorage.getItem('lastLoginDate') || '');
+  
+  // Arcade State
   const [selectedGame, setSelectedGame] = useState(null);
   const [betAmount, setBetAmount] = useState(10);
   const [gameResultMsg, setGameResultMsg] = useState('');
-  // Minigame vars
   const [cards, setCards] = useState([]);
   const [flippedCards, setFlippedCards] = useState([]);
   const [matchedCards, setMatchedCards] = useState([]);
@@ -110,10 +122,6 @@ function App() {
   const [coinSide, setCoinSide] = useState('heads');
   const [slotReels, setSlotReels] = useState([0, 1, 2]); 
   const [isSpinning, setIsSpinning] = useState(false);
-  
-  // Daily Login
-  const [lastLoginDate, setLastLoginDate] = useState(() => localStorage.getItem('lastLoginDate') || '');
-  const [loginStreak, setLoginStreak] = useState(() => parseInt(localStorage.getItem('loginStreak') || '0'));
 
   // --- SYNC & AUDIO ---
   useEffect(() => { localStorage.setItem('meow', localMeow); }, [localMeow]);
@@ -121,7 +129,6 @@ function App() {
   useEffect(() => { localStorage.setItem('inventory', JSON.stringify(inventory)); }, [inventory]);
   useEffect(() => { localStorage.setItem('equipped', JSON.stringify(equippedIds)); }, [equippedIds]);
   useEffect(() => { localStorage.setItem('pity', pityCounter); }, [pityCounter]);
-  useEffect(() => { localStorage.setItem('loginStreak', loginStreak); localStorage.setItem('lastLoginDate', lastLoginDate); }, [loginStreak, lastLoginDate]);
   useEffect(() => { localStorage.setItem('gameCount', gameCount); localStorage.setItem('lastPlayedDate', new Date().toDateString()); }, [gameCount]);
 
   useEffect(() => {
@@ -141,39 +148,40 @@ function App() {
   };
   const clickSound = () => playSfx('ui_click.mp3');
 
-  // --- CORE LOOPS ---
+  // --- CORE SYSTEM: 2-AXIS SYNERGY (W - C) ---
   useEffect(() => {
-    const interval = setInterval(() => {
-        setCatPos(prev => {
-            const next = { ...prev };
-            const nextDir = { ...catDir };
-            equippedIds.forEach((id, idx) => {
-                if(!next[id]) next[id] = 10 + (idx * 15);
-                if (movingCats[id]) {
-                    let x = next[id];
-                    let dir = nextDir[id] || 'right';
-                    if (dir === 'right') { x += 0.5; if (x > 90) dir = 'left'; } 
-                    else { x -= 0.5; if (x < 5) dir = 'right'; }
-                    next[id] = x; nextDir[id] = dir;
-                }
-            });
-            setCatDir(nextDir);
-            return next;
-        });
-    }, 50);
-    return () => clearInterval(interval);
-  }, [equippedIds, movingCats, catDir]);
+      const activeCats = inventory.filter(c => equippedIds.includes(c.uuid));
+      let totalW = 0, totalC = 0;
+      
+      activeCats.forEach(cat => {
+          const stats = PERSONALITY_MAP[cat.personality] || { w: 0, c: 0 };
+          totalW += stats.w;
+          totalC += stats.c;
+      });
 
+      const score = totalW - totalC;
+      let multiplier = 1.0;
+      let label = "Neutral";
+
+      if (score >= 8) { multiplier = 1.15; label = "Perfect Harmony (+15%)"; }
+      else if (score >= 4) { multiplier = 1.08; label = "Good Vibes (+8%)"; }
+      else if (score >= 1) { multiplier = 1.03; label = "Stable (+3%)"; }
+      else if (score >= -2) { multiplier = 0.95; label = "Tension (-5%)"; }
+      else { multiplier = 0.88; label = "Chaotic (-12%)"; }
+
+      setTeamStats({ w: totalW, c: totalC, score, multiplier, label });
+  }, [equippedIds, inventory]);
+
+  // --- MINING LOOP ---
   useEffect(() => {
       const miningTick = setInterval(() => {
           setInventory(prevInv => {
-              let earnedFish = 0;
-              let earnedMeow = 0;
+              let earnedFish = 0; let earnedMeow = 0;
               const nextInv = prevInv.map(cat => {
                   if (equippedIds.includes(cat.uuid)) {
                       if (cat.hunger > 0) {
                           const rates = MINING_RATE[cat.rarity] || MINING_RATE['R'];
-                          earnedFish += rates.fish;
+                          earnedFish += (rates.fish * teamStats.multiplier);
                           if (Math.random() < rates.meow) earnedMeow += 1;
                           return { ...cat, hunger: Math.max(0, cat.hunger - 0.1) };
                       }
@@ -187,7 +195,28 @@ function App() {
           });
       }, 3000); 
       return () => clearInterval(miningTick);
-  }, [equippedIds]);
+  }, [equippedIds, teamStats]);
+
+  // --- CAT MOVEMENT LOOP ---
+  useEffect(() => {
+    const interval = setInterval(() => {
+        setCatPos(prev => {
+            const next = { ...prev };
+            const nextDir = { ...catDir };
+            equippedIds.forEach((id, idx) => {
+                if(!next[id]) next[id] = 10 + (idx * 15);
+                if (movingCats[id]) {
+                    let x = next[id];
+                    let dir = nextDir[id] || 'right';
+                    if (dir === 'right') { x += 0.5; if (x > 90) dir = 'left'; } else { x -= 0.5; if (x < 5) dir = 'right'; }
+                    next[id] = x; nextDir[id] = dir;
+                }
+            });
+            setCatDir(nextDir); return next;
+        });
+    }, 50);
+    return () => clearInterval(interval);
+  }, [equippedIds, movingCats, catDir]);
 
   // --- ACTIONS ---
   const openBlindBox = (times) => {
@@ -196,29 +225,18 @@ function App() {
       if (localFish < cost) return alert("Not enough FISH!");
       setLocalFish(p => p - cost);
       setIsRolling(true); playSfx('slot_spin.mp3'); 
-
       setTimeout(() => {
           const newItems = [];
           let currentPity = pityCounter;
           for(let i=0; i<times; i++) {
-              currentPity++;
-              let rarity = 'R';
-              let roll = Math.random() * 100;
-              if (currentPity >= 60) { rarity = 'SSR'; currentPity = 0; }
-              else {
-                  if (roll < 1) { rarity = 'SSR'; currentPity = 0; }
-                  else if (roll < 6) rarity = 'SR';
-              }
+              currentPity++; let rarity = 'R'; let roll = Math.random() * 100;
+              if (currentPity >= 60) { rarity = 'SSR'; currentPity = 0; } else { if (roll < 1) { rarity = 'SSR'; currentPity = 0; } else if (roll < 6) rarity = 'SR'; }
               const candidates = CAT_DB.filter(x => x.rarity === rarity);
               const item = candidates[Math.floor(Math.random() * candidates.length)];
               newItems.push({ ...item, uuid: Date.now() + Math.random(), type: 'cat', isNew: true, hunger: 100 });
           }
-          setPityCounter(currentPity);
-          setInventory([...inventory, ...newItems]);
-          setGachaResults(newItems);
-          setIsRolling(false);
-          const hasRare = newItems.some(i => i.rarity === 'SSR' || i.rarity === 'SR');
-          playSfx(hasRare ? 'game_win.mp3' : 'ui_click.mp3');
+          setPityCounter(currentPity); setInventory([...inventory, ...newItems]); setGachaResults(newItems); setIsRolling(false);
+          const hasRare = newItems.some(i => i.rarity === 'SSR' || i.rarity === 'SR'); playSfx(hasRare ? 'game_win.mp3' : 'ui_click.mp3');
       }, 2500);
   };
 
@@ -229,69 +247,56 @@ function App() {
     const yesterday = new Date(Date.now() - 86400000).toDateString();
     let streak = (lastLoginDate === yesterday) ? loginStreak + 1 : 1;
     const reward = (streak % 7 === 0) ? 300 : 100;
-    setLocalFish(f => f + reward);
-    setLastLoginDate(today);
-    setLoginStreak(streak);
-    playSfx('game_win.mp3');
-    alert(`Daily Login! Day ${streak}. Received +${reward} FISH!`);
+    setLocalFish(f => f + reward); setLastLoginDate(today); setLoginStreak(streak);
+    playSfx('game_win.mp3'); alert(`Daily Login! Day ${streak}. Received +${reward} FISH!`);
   };
 
   const buyFish = () => {
-    clickSound();
-    if (!account) return alert("Connect Wallet first!");
-    const tx = new Transaction();
-    const [coin] = tx.splitCoins(tx.gas, [tx.pure.u64(1000000000)]);
+    clickSound(); if (!account) return alert("Connect Wallet!");
+    const tx = new Transaction(); const [coin] = tx.splitCoins(tx.gas, [tx.pure.u64(1000000000)]);
     tx.transferObjects([coin], tx.pure.address(GAME_STORE_ID)); 
-    signAndExecute({ transaction: tx }, {
-        onSuccess: () => { setLocalFish(p => p + 50); alert("Payment Successful! +50 FISH."); playSfx('game_win.mp3'); },
-        onError: () => alert("Transaction Failed!")
-    });
+    signAndExecute({ transaction: tx }, { onSuccess: () => { setLocalFish(p=>p+50); playSfx('game_win.mp3'); }, onError: ()=>alert("Failed") });
   };
 
   const claimRewards = () => {
-    if (pendingRewards.fish <= 0) return;
-    clickSound(); playSfx('game_win.mp3');
-    setLocalFish(f => f + Math.floor(pendingRewards.fish));
-    setLocalMeow(m => m + pendingRewards.meow);
+    if (pendingRewards.fish <= 0) return; clickSound(); playSfx('game_win.mp3');
+    setLocalFish(f => f + Math.floor(pendingRewards.fish)); setLocalMeow(m => m + pendingRewards.meow);
     setPendingRewards({ fish: 0, meow: 0 });
-    alert(`Claimed: ${Math.floor(pendingRewards.fish)} FISH & ${pendingRewards.meow} MEOW`);
   };
 
   const interact = (type, uuid) => {
-    if (type === 'wander') {
-        clickSound(); setMovingCats(p => ({...p, [uuid]: !p[uuid]})); setInteractingCatId(null); return;
-    }
+    if (type === 'wander') { clickSound(); setMovingCats(p => ({...p, [uuid]: !p[uuid]})); setInteractingCatId(null); return; }
     if (type === 'feed') {
         if (localFish < 5) return alert("Need 5 FISH");
         setLocalFish(p => p - 5); setInventory(prev => prev.map(c => c.uuid === uuid ? { ...c, hunger: Math.min(100, c.hunger + 50) } : c));
         playSfx('cat_eat.mp3'); setInteractingCatId(null); return;
     }
-    if (localFish < 1) return alert("Need 1 FISH");
-    setLocalFish(p => p - 1); playSfx('cat_meow.mp3'); setInteractingCatId(null);
+    if (type === 'pet') { // Thêm logic pet vào đây
+        if (localFish < 1) return alert("Need 1 FISH");
+        setLocalFish(p => p - 1); playSfx('cat_meow.mp3'); setInteractingCatId(null); return;
+    }
   };
 
-  // --- MINIGAMES ---
+  const toggleEquip = (uuid) => {
+      if(equippedIds.includes(uuid)) setEquippedIds(p=>p.filter(id=>id!==uuid)); 
+      else { if(equippedIds.length>=6) return alert("Max 6 cats"); setEquippedIds(p=>[...p, uuid]); }
+      setInspectCat(null); 
+  };
+
+  // --- MINIGAME FUNCTIONS ---
   const checkCanPlay = () => { if (gameCount >= 10) { alert("Daily limit reached (10/10)!"); return false; } return true; };
   const startMemoryGame = () => {
       clickSound(); if(!checkCanPlay()) return;
       const shuffled = [...CARD_ICONS, ...CARD_ICONS].sort(()=>Math.random()-0.5).map((icon,id)=>({id, icon}));
-      setCards(shuffled); setFlippedCards([]); setMatchedCards([]); 
-      setTimer(60); setGameState('playing'); setGameResultMsg('');
+      setCards(shuffled); setFlippedCards([]); setMatchedCards([]); setTimer(60); setGameState('playing'); setGameResultMsg('');
   };
   const handleCardClick = (id) => {
       if (gameState !== 'playing' || flippedCards.length === 2 || matchedCards.includes(id)) return;
-      playSfx('ui_click.mp3');
-      const newFlipped = [...flippedCards, id];
-      setFlippedCards(newFlipped);
+      playSfx('ui_click.mp3'); const newFlipped = [...flippedCards, id]; setFlippedCards(newFlipped);
       if (newFlipped.length === 2) {
           const [id1, id2] = newFlipped;
           if (cards[id1].icon === cards[id2].icon) {
-              setMatchedCards(p => {
-                  const newM = [...p, id1, id2];
-                  if(newM.length === cards.length) { setGameState('won'); setLocalFish(f=>f+10); setGameCount(c=>c+1); playSfx('game_win.mp3'); }
-                  return newM;
-              });
-              setFlippedCards([]);
+              setMatchedCards(p => { const newM = [...p, id1, id2]; if(newM.length === cards.length) { setGameState('won'); setLocalFish(f=>f+10); setGameCount(c=>c+1); playSfx('game_win.mp3'); } return newM; }); setFlippedCards([]);
           } else { setTimeout(() => setFlippedCards([]), 800); }
       }
   };
@@ -301,57 +306,55 @@ function App() {
       let flips = 0;
       const interval = setInterval(() => {
           setCoinSide(prev => prev === 'heads' ? 'tails' : 'heads'); flips++;
-          if (flips > 10) {
-              clearInterval(interval);
-              const result = Math.random() > 0.5 ? 'heads' : 'tails';
-              setCoinSide(result); setIsFlipping(false); setGameCount(c => c + 1);
-              if (result === choice) { const win = betAmount * 2; setLocalFish(p => p + win); setGameResultMsg(`WIN! +${win}🐟`); playSfx('game_win.mp3'); } 
-              else { setGameResultMsg(`LOST -${betAmount}🐟`); }
-          }
+          if (flips > 10) { clearInterval(interval); const result = Math.random() > 0.5 ? 'heads' : 'tails'; setCoinSide(result); setIsFlipping(false); setGameCount(c => c + 1); if (result === choice) { const win = betAmount * 2; setLocalFish(p => p + win); setGameResultMsg(`WIN! +${win}🐟`); playSfx('game_win.mp3'); } else { setGameResultMsg(`LOST -${betAmount}🐟`); } }
       }, 150);
   };
   const playSlotMachine = () => {
       clickSound(); if (!checkCanPlay() || isSpinning || localFish < betAmount) return;
       setLocalFish(p => p - betAmount); setIsSpinning(true); setGameResultMsg(''); playSfx('slot_spin.mp3');
       const interval = setInterval(() => { setSlotReels([Math.floor(Math.random()*4), Math.floor(Math.random()*4), Math.floor(Math.random()*4)]); }, 100);
-      setTimeout(() => {
-          clearInterval(interval);
-          const finalReels = [Math.floor(Math.random()*4), Math.floor(Math.random()*4), Math.floor(Math.random()*4)];
-          setSlotReels(finalReels); setIsSpinning(false); setGameCount(c => c + 1);
-          const [r1, r2, r3] = finalReels;
-          let multiplier = 0;
-          if (r1 === r2 && r2 === r3) { multiplier = (SLOT_SYMBOLS[r1].val === 7) ? 10 : 5; } 
-          else if (r1 === r2 || r2 === r3 || r1 === r3) { multiplier = 2; }
-          if (multiplier > 0) { const win = betAmount * multiplier; setLocalFish(p => p + win); setGameResultMsg(`JACKPOT! x${multiplier} (+${win}🐟)`); playSfx('game_win.mp3'); } 
-          else { setGameResultMsg(`LOST -${betAmount}🐟`); }
-      }, 2000);
+      setTimeout(() => { clearInterval(interval); const finalReels = [Math.floor(Math.random()*4), Math.floor(Math.random()*4), Math.floor(Math.random()*4)]; setSlotReels(finalReels); setIsSpinning(false); setGameCount(c => c + 1); const [r1, r2, r3] = finalReels; let multiplier = 0; if (r1 === r2 && r2 === r3) { multiplier = (SLOT_SYMBOLS[r1].val === 7) ? 10 : 5; } else if (r1 === r2 || r2 === r3 || r1 === r3) { multiplier = 2; } if (multiplier > 0) { const win = betAmount * multiplier; setLocalFish(p => p + win); setGameResultMsg(`JACKPOT! x${multiplier} (+${win}🐟)`); playSfx('game_win.mp3'); } else { setGameResultMsg(`LOST -${betAmount}🐟`); } }, 2000);
   };
 
   // --- RENDER HELPERS ---
-  const renderBlindBoxShop = () => (
-    <div className="gacha-panel">
-        <div className="banner-title" style={{color:'#ff7043', fontSize:'20px'}}>BLIND BOX</div>
-        <div className="gacha-banner blind-box">
-           <div className="blind-box-visual">?</div>
-           <div className="banner-info">SSR: 1% | SR: 5% | Pity: {pityCounter}/60</div>
-        </div>
-        <div className="gacha-actions">
-            <div className="btn-roll" onClick={()=>openBlindBox(1)}><span>OPEN 1</span><br/><span>160 🐟</span></div>
-            <div className="btn-roll premium" onClick={()=>openBlindBox(10)}><span>OPEN 10</span><br/><span>1600 🐟</span></div>
-        </div>
-        <div className="sui-top-up">
-            <span style={{fontSize:'10px'}}>Need Funds?</span>
-            <button className="btn-action" style={{padding:'5px'}} onClick={buyFish}>1 SUI = 50 FISH</button>
-        </div>
-    </div>
-  );
+  const renderInspectModal = () => {
+      if (!inspectCat) return null;
+      const stats = PERSONALITY_MAP[inspectCat.personality] || {w:0, c:0, desc:"Unknown"};
+      const isEquipped = equippedIds.includes(inspectCat.uuid);
+
+      return (
+          <div className="inspect-overlay">
+              <div className="cat-inspect-card">
+                  <div className="inspect-header">
+                      <h3>{inspectCat.name}</h3>
+                      <span className={`rarity-tag ${inspectCat.rarity}`}>{inspectCat.rarity}</span>
+                  </div>
+                  <div className="inspect-body">
+                      <div className="cat-portrait-large" style={{backgroundImage: `url(/assets/cat_${inspectCat.id}.png)`}}></div>
+                      <div className="stats-block">
+                          <div style={{color:'gold', fontWeight:'bold', marginBottom:'5px'}}>{inspectCat.personality.toUpperCase()}</div>
+                          <div style={{fontSize:'10px', fontStyle:'italic', color:'#aaa', marginBottom:'10px'}}>"{stats.desc}"</div>
+                          <div className="stat-row-detail"><span>Warmth (W):</span> <span className={stats.w>0?'pos':'neg'}>{stats.w}</span></div>
+                          <div className="stat-row-detail"><span>Chaos (C):</span> <span className={stats.c>0?'neg':'pos'}>{stats.c}</span></div>
+                      </div>
+                  </div>
+                  <div className="inspect-footer">
+                      <button className={`btn-action ${isEquipped ? 'btn-unequip' : ''}`} onClick={()=>{clickSound(); toggleEquip(inspectCat.uuid)}}>
+                          {isEquipped ? 'UNEQUIP' : 'EQUIP'}
+                      </button>
+                      <button className="btn-action btn-close-inspect" onClick={()=>{clickSound(); setInspectCat(null)}}>CLOSE</button>
+                  </div>
+              </div>
+          </div>
+      );
+  };
 
   const renderArcade = () => (
     <div className="pixel-panel arcade-panel">
         <button className="btn-close" onClick={()=>{clickSound(); setActiveTab(null); setSelectedGame(null)}}>X</button>
         {!selectedGame ? (
             <>
-                <h2 style={{textShadow:'3px 4px 2px #5c69ff', marginTop:'30px', fontSize:'24px'}}>ARCADE CENTER</h2>
+                <h2 style={{textShadow:'3px 4px 2px #5c69ff', marginTop:'30px'}}>ARCADE CENTER</h2>
                 <p style={{fontSize:'14px', color:'yellow'}}>Daily Plays: {gameCount}/10</p>
                 <div className="arcade-menu">
                     <button className="game-card-btn" onClick={()=>{startMemoryGame(); setSelectedGame('card');}}>
@@ -372,9 +375,7 @@ function App() {
                     <div className="slot-machine-wrapper">
                         <div className="slot-machine-bg" style={{backgroundImage: 'url(/assets/slot_machine.png)'}}>
                             <div className="reels-window">
-                                {slotReels.map((symbolIdx, i) => (
-                                    <div key={i} className={`reel ${isSpinning?'blur':''}`}><img src={SLOT_SYMBOLS[symbolIdx].img} alt="s"/></div>
-                                ))}
+                                {slotReels.map((symbolIdx, i) => (<div key={i} className={`reel ${isSpinning?'blur':''}`}><img src={SLOT_SYMBOLS[symbolIdx].img} alt="s"/></div>))}
                             </div>
                             <div className={`slot-handle ${isSpinning ? 'pulling' : ''}`}></div>
                         </div>
@@ -387,8 +388,7 @@ function App() {
                  {selectedGame === 'coin' && (
                     <div className="coin-flip-container">
                         <div className={`coin ${isFlipping ? 'flipping' : ''} ${coinSide}`}>
-                            <div className="side heads">HEADS</div>
-                            <div className="side tails">TAILS</div>
+                            <div className="side heads">HEADS</div><div className="side tails">TAILS</div>
                         </div>
                         {!isFlipping && <div className="bet-controls">
                             <input type="number" min="1" max={localFish} value={betAmount} onChange={(e)=>setBetAmount(Number(e.target.value))} />
@@ -412,12 +412,22 @@ function App() {
     </div>
   );
 
+  const renderBlindBoxShop = () => (
+    <div className="gacha-panel">
+        <div className="banner-title" style={{color:'#ff7043', fontSize:'20px'}}>BLIND BOX</div>
+        <div className="gacha-banner blind-box"><div className="blind-box-visual">?</div><div className="banner-info">SSR: 1% | SR: 5% | Pity: {pityCounter}/60</div></div>
+        <div className="gacha-actions">
+            <div className="btn-roll" onClick={()=>openBlindBox(1)}><span>OPEN 1</span><br/><span>160 🐟</span></div>
+            <div className="btn-roll premium" onClick={()=>openBlindBox(10)}><span>OPEN 10</span><br/><span>1600 🐟</span></div>
+        </div>
+        <div className="sui-top-up"><span style={{fontSize:'10px'}}>Need Funds?</span><button className="btn-action" style={{padding:'5px'}} onClick={buyFish}>1 SUI = 50 FISH</button></div>
+    </div>
+  );
+
   const renderBookDetail = () => (
       <div className="minigame-overlay">
           <div className="book-container detail-view">
-                {/* FIXED: Close button inside container */}
-              <button className="btn-close" style={{top:'-10px', right:'-10px'}} onClick={()=>{clickSound(); setBookDetailCat(null)}}>X</button>
-              
+              <button className="btn-close" style={{top:'15px', right:'15px'}} onClick={()=>{clickSound(); setBookDetailCat(null)}}>X</button>
               <div className="book-page left-page">
                   <h3 style={{color: bookDetailCat.rarity==='SSR'?'gold':'#333', fontSize:'20px'}}>{bookDetailCat.name}</h3>
                   <div className="cat-portrait" style={{backgroundImage: `url(/assets/cat_${bookDetailCat.id}.png)`}}></div>
@@ -425,11 +435,10 @@ function App() {
               </div>
               <div className="book-page right-page">
                   <h3>STATS</h3>
-                  <div className="stat-row"><span>GENDER:</span> <span>{bookDetailCat.gender}</span></div>
                   <div className="stat-row"><span>RANK:</span> <span>{bookDetailCat.rarity === 'SSR' ? 'DIVINE' : bookDetailCat.rarity === 'SR' ? 'NOBLE' : 'COMMON'}</span></div>
                   <div className="stat-row"><span>PERSONALITY:</span> <span>{bookDetailCat.personality}</span></div>
                   <div className="stat-row"><span>MINING EFF:</span> <span>{MINING_RATE[bookDetailCat.rarity].label}</span></div>
-                  <div className="stat-desc">"{bookDetailCat.desc}"</div>
+                  <div className="stat-desc">"{PERSONALITY_MAP[bookDetailCat.personality]?.desc}"</div>
               </div>
           </div>
       </div>
@@ -454,64 +463,49 @@ function App() {
             </div>
         </div>
 
-        {isRolling && (
-            <div className="minigame-overlay" style={{zIndex: 4000}}>
-                <div className="rolling-container">
-                    <div className="rolling-box shake-anim">?</div>
-                    <div className="rolling-text">OPENING...</div>
-                </div>
-            </div>
-        )}
+        {isRolling && <div className="minigame-overlay" style={{zIndex: 4000}}><div className="rolling-container"><div className="rolling-box shake-anim">?</div><div className="rolling-text">OPENING...</div></div></div>}
+        {showSettings && <div className="minigame-overlay"><div className="pixel-panel settings-panel"><div className="setting-row"><label>MUSIC</label><input type="range" max="1" step="0.1" value={musicVol} onChange={(e)=>setMusicVol(parseFloat(e.target.value))} /></div><div className="setting-row"><label>SFX</label><input type="range" max="1" step="0.1" value={sfxVol} onChange={(e)=>setSfxVol(parseFloat(e.target.value))} /></div><button className="btn-action" onClick={()=>{clickSound(); setShowSettings(false)}}>CLOSE</button></div></div>}
 
-        {showSettings && (
-             <div className="minigame-overlay">
-             <div className="pixel-panel settings-panel">
-                 <h3>SETTINGS</h3>
-                 <div className="setting-row"><label>MUSIC</label><input type="range" max="1" step="0.1" value={musicVol} onChange={(e)=>setMusicVol(parseFloat(e.target.value))} /></div>
-                 <div className="setting-row"><label>SFX</label><input type="range" max="1" step="0.1" value={sfxVol} onChange={(e)=>setSfxVol(parseFloat(e.target.value))} /></div>
-                 <button className="btn-action" onClick={()=>{clickSound(); setShowSettings(false)}}>CLOSE</button>
-             </div></div>
-        )}
+        {activeTab === 'shop' && <div className="minigame-overlay"><div className="pixel-panel"><button className="btn-close" onClick={()=>{clickSound(); setActiveTab(null)}}>X</button>{gachaResults ? <div className="gacha-panel"><h2 style={{color:'gold', fontSize:'30px'}}>RESULTS</h2><div className="result-grid">{gachaResults.map((item, i) => (<div key={i} className={`result-item ${item.rarity}`}><div className="item-img" style={{backgroundImage: `url(/assets/cat_${item.id}.png)`}}></div><span>{item.rarity}</span></div>))}</div><button className="btn-action" onClick={()=>{clickSound(); setGachaResults(null)}}>COLLECT</button></div> : renderBlindBoxShop()}</div></div>}
 
-        {activeTab === 'shop' && (
-            <div className="minigame-overlay">
-                <div className="pixel-panel">
-                    <button className="btn-close" onClick={()=>{clickSound(); setActiveTab(null); setGachaResults(null)}}>X</button>
-                    {gachaResults ? (
-                        <div className="gacha-panel">
-                            <h2 style={{color:'gold', fontSize:'30px'}}>RESULTS</h2>
-                            <div className="result-grid">{gachaResults.map((item, i) => (<div key={i} className={`result-item ${item.rarity}`}><div className="item-img" style={{backgroundImage: `url(/assets/cat_${item.id}.png)`}}></div><span>{item.rarity}</span></div>))}</div>
-                            <button className="btn-action" onClick={()=>{clickSound(); setGachaResults(null)}}>COLLECT</button>
-                        </div>
-                    ) : renderBlindBoxShop()}
-                </div>
-            </div>
-        )}
-
-        {/* HOUSE WITH FILTER */}
         {activeTab === 'house' && (
             <div className="minigame-overlay">
-                <div className="pixel-panel" style={{width:'800px'}}>
-                    <button className="btn-close" onClick={()=>{clickSound(); setActiveTab(null)}}>X</button>
+                <div className="pixel-panel" style={{width:'800px', position:'relative'}}>
+                    <button className="btn-close" onClick={()=>{clickSound(); setActiveTab(null); setInspectCat(null)}}>X</button>
                     <h2>MY HOUSE</h2>
                     
-                    {/* NEW: FILTER BAR */}
+                    {/* SYNERGY DASHBOARD (HORIZONTAL) */}
+                    <div className="synergy-dashboard-v2">
+                        <div className="syn-card">
+                            <span className="syn-icon">⚖️</span>
+                            <div>
+                                <div className="syn-title">HARMONY (W-C)</div>
+                                <div className="syn-value" style={{color: teamStats.score>0?'#00e676':teamStats.score<0?'#ff5252':'white'}}>{teamStats.score}</div>
+                            </div>
+                        </div>
+                        <div className="syn-card">
+                            <span className="syn-icon">✨</span>
+                            <div>
+                                <div className="syn-title">EFFECT</div>
+                                <div className="syn-value" style={{fontSize:'12px', color:'gold'}}>{teamStats.label}</div>
+                            </div>
+                        </div>
+                    </div>
+
                     <div className="filter-bar">
-                        <button className={filterRarity==='ALL'?'active':''} onClick={()=>setFilterRarity('ALL')}>ALL</button>
-                        <button className={filterRarity==='R'?'active':''} onClick={()=>setFilterRarity('R')}>R</button>
-                        <button className={filterRarity==='SR'?'active':''} onClick={()=>setFilterRarity('SR')}>SR</button>
-                        <button className={filterRarity==='SSR'?'active':''} onClick={()=>setFilterRarity('SSR')}>SSR</button>
+                        {['ALL','R','SR','SSR'].map(r => (<button key={r} className={filterRarity===r?'active':''} onClick={()=>{clickSound(); setFilterRarity(r)}}>{r}</button>))}
                     </div>
 
                     <div className="house-grid">
                         {inventory
                             .filter(i => i.type === 'cat')
-                            .filter(i => filterRarity === 'ALL' || i.rarity === filterRarity) // Logic Filter
+                            .filter(i => filterRarity === 'ALL' || i.rarity === filterRarity)
                             .map(cat => (
                             <div key={cat.uuid} className={`house-slot ${equippedIds.includes(cat.uuid) ? 'active' : ''}`} 
-                                 onClick={() => {clickSound(); if(equippedIds.includes(cat.uuid)) setEquippedIds(p=>p.filter(id=>id!==cat.uuid)); else { if(equippedIds.length>=6) return alert("Max 6 cats"); setEquippedIds(p=>[...p, cat.uuid]); }}}>
+                                 onClick={() => {clickSound(); setInspectCat(cat)}}>
                                 <div className="pixel-icon" style={{backgroundImage: `url(/assets/cat_${cat.id}.png)`}}></div>
                                 <div className="hunger-bar"><div style={{width:`${cat.hunger}%`, background: cat.hunger<20?'red':'#00e676'}}></div></div>
+                                <span style={{fontSize:'7px', color:'#aaa'}}>{cat.personality}</span>
                                 {equippedIds.includes(cat.uuid) && <div className="equipped-badge">E</div>}
                             </div>
                         ))}
@@ -520,34 +514,18 @@ function App() {
             </div>
         )}
 
-        {activeTab === 'arcade' && (
-            <div className="minigame-overlay">{renderArcade()}</div>
-        )}
+        {/* INSPECT OVERLAY */}
+        {inspectCat && renderInspectModal()}
 
-        {activeTab === 'book' && (
-            <div className="minigame-overlay">
-                <div className="book-container">
-                    {/* FIXED: Close button inside container */}
-                    <button className="btn-close" style={{top:'-10px', right:'-10px'}} onClick={()=>{clickSound(); setActiveTab(null)}}>X</button>
-                    <div className="book-page">
-                        <h3>CATS</h3>
-                        <div className="book-grid">{CAT_DB.map(c => { 
-                            const isOwned = inventory.some(i => i.id === c.id); 
-                            return (
-                                <div key={c.id} className={`book-item ${!isOwned ? 'locked' : ''}`} 
-                                     onClick={()=>{if(isOwned) {clickSound(); setBookDetailCat(c)}}}>
-                                    {isOwned ? <div className="pixel-icon" style={{backgroundImage: `url(/assets/cat_${c.id}.png)`}}></div> : '?'}
-                                </div>
-                            ) 
-                        })}</div>
-                    </div>
-                    <div className="book-page">
-                        <h3>GEAR</h3>
-                        <div className="book-grid">{ACC_DB.map(a => (<div key={a.id} className="book-item locked">?</div>))}</div>
-                    </div>
-                </div>
+        {activeTab === 'arcade' && <div className="minigame-overlay">{renderArcade()}</div>}
+
+        {activeTab === 'book' && <div className="minigame-overlay">
+            <div className="book-container">
+                <button className="btn-close" style={{top:'15px', right:'15px'}} onClick={()=>{clickSound(); setActiveTab(null)}}>X</button>
+                <div className="book-page"><h3>CATS</h3><div className="book-grid">{CAT_DB.map(c => { const isOwned = inventory.some(i => i.id === c.id); return (<div key={c.id} className={`book-item ${!isOwned ? 'locked' : ''}`} onClick={()=>{if(isOwned) {clickSound(); setBookDetailCat(c)}}}>{isOwned ? <div className="pixel-icon" style={{backgroundImage: `url(/assets/cat_${c.id}.png)`}}></div> : '?'}</div>) })}</div></div>
+                <div className="book-page"><h3>GEAR</h3><div className="book-grid">{ACC_DB.map(a => (<div key={a.id} className="book-item locked">?</div>))}</div></div>
             </div>
-        )}
+        </div>}
 
         {bookDetailCat && renderBookDetail()}
 
@@ -561,8 +539,7 @@ function App() {
         )}
 
         {inventory.filter(item => equippedIds.includes(item.uuid)).map((cat) => {
-             const moving = movingCats[cat.uuid];
-             const isHungry = cat.hunger <= 0;
+             const moving = movingCats[cat.uuid]; const isHungry = cat.hunger <= 0;
              return (
              <div key={cat.uuid} className="cat-wrapper" style={{ left: `${catPos[cat.uuid]}%`, bottom: '-50%', top:'90%' }}>
                 {isHungry && <div className="bubble-hungry">🍖</div>}
@@ -575,14 +552,11 @@ function App() {
                         <button style={{background:'#c62828'}} onClick={()=>{clickSound(); setInteractingCatId(null)}}>X</button>
                     </div>
                 )}
-                <div className={`cat-aura ${cat.rarity === 'SR' ? 'cat-sr' : ''} ${cat.rarity === 'SSR' ? 'cat-ssr' : ''}`}> 
-                    <div className={`Character ${moving ? 'is-moving' : 'is-idle'} ${(catDir[cat.uuid]||'right')==='right'?'face-right':'face-left'} `} 
-                         style={{filter: isHungry ? 'grayscale(1)' : 'none'}}
-                         onClick={() => {clickSound(); setInteractingCatId(interactingCatId === cat.uuid ? null : cat.uuid)}}>
+                <div className={`cat-aura`} onClick={() => {clickSound(); setInteractingCatId(interactingCatId === cat.uuid ? null : cat.uuid)}}> 
+                    <div className={`Character ${moving ? 'is-moving' : 'is-idle'} ${(catDir[cat.uuid]||'right')==='right'?'face-right':'face-left'} `} style={{filter: isHungry ? 'grayscale(1)' : 'none'}}>
                         <img src={`/assets/cat_${cat.id}.png`} className="Character_spritesheet" alt="cat" />
                     </div>
                 </div>
-                {!isHungry && <div className="mining-sparkle">✨</div>}
              </div>
         )})}
     </div>

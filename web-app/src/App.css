@@ -1,346 +1,550 @@
 @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
 
-/* --- GLOBAL SETTINGS --- */
-body { background: #1a1a1a; margin: 0; overflow: hidden; user-select: none; color: white; font-family: 'Press Start 2P', cursive; }
-.game-container { width: 100vw; height: 100vh; background: url('/assets/bg_minecraft.png') no-repeat center/cover; position: relative; background-position-y: -320px; }
-.minigame-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 3000; display: flex; align-items: center; justify-content: center; }
-.pixel-panel { background: #3e2723; border: 4px solid #fff; padding: 20px; text-align: center; position: relative; image-rendering: pixelated; box-shadow: 8px 8px 0 black; width: 700px; max-width: 90vw; }
-
-/* --- BUTTONS --- */
-button { font-family: inherit; cursor: pointer; border: 3px solid #fff; padding: 10px; text-transform: uppercase; font-size: 10px; margin: 5px; box-shadow: 3px 3px 0 #000; color: white; background-color: #333; text-shadow: 1px 1px 0 #000; }
-button:active { transform: translate(2px, 2px); box-shadow: 1px 1px 0 #000; }
-.btn-close { background: #c62828; position: absolute; top: 10px; right: 10px; width: 30px; height: 30px; font-size: 12px; z-index: 10; }
-.btn-action { background: #2e7d32; width: 100%; font-size: 14px; padding: 15px; }
-
-/* --- TOP BAR --- */
-.top-bar { position: absolute; top: 0; left: 0; width: 100%; padding: 15px; display: flex; justify-content: space-between; z-index: 2000; box-sizing: border-box; }
-.group-btn { display: flex; gap: 8px; align-items: center; }
-.btn-menu { min-width: 70px; font-size: 10px !important; padding: 8px; }
-.setting-btn { width: 35px !important; min-width: unset; text-align: center; padding: 8px; }
-.stat-box { padding: 8px 12px; font-size: 10px; border: 2px solid white; display: flex; align-items: center; min-width: 60px; justify-content: center; }
-.meow-token { background: #6a1b9a; border-color: #ba68c8; }
-.fish-token { background: #0277bd; border-color: #4fc3f7; }
-
-/* --- BLIND BOX --- */
-.gacha-panel { width: 100%; display: flex; flex-direction: column; gap: 15px; align-items: center; }
-.gacha-banner.blind-box { width: 90%; height: 180px; border: 4px solid white; background: radial-gradient(circle, #ffab91, #d84315); display: flex; align-items: center; justify-content: center; position: relative; }
-.blind-box-visual { font-size: 80px; animation: floatBox 2s infinite ease-in-out; text-shadow: 4px 4px 0 #3e2723; }
-.banner-info { position: absolute; bottom: 5px; font-size: 10px; background: rgba(0,0,0,0.5); padding: 5px 10px; border-radius: 5px; }
-.gacha-actions { display: flex; justify-content: center; gap: 20px; width: 100%; }
-
-/* FIX ALIGNMENT FOR GACHA BUTTONS */
-.btn-roll { 
-    width: 140px; height: 80px; 
-    background: #2e7d32; font-size: 12px; 
-    display: flex; flex-direction: column; align-items: center; justify-content: center; /* Centering */
-    gap: 5px;
-}
-.btn-roll.premium { background: linear-gradient(to bottom, #f57f17, #fbc02d); color: black; border-color: gold; text-shadow: none; }
-.result-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin: 20px 0; justify-items: center; }
-.result-item { width: 70px; height: 90px; background: white; border: 2px solid black; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-.result-item.SSR { border-color: gold; box-shadow: 0 0 10px gold; }
-.item-img { width: 32px; height: 32px; background-size: 128px auto; image-rendering: pixelated; transform: scale(1.5); }
-@keyframes floatBox { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
-
-/* --- ROLLING ANIMATION --- */
-.rolling-container { display: flex; flex-direction: column; align-items: center; }
-.rolling-box { font-size: 80px; color: gold; width: 150px; height: 150px; background: radial-gradient(#d84315, #bf360c); border: 5px solid white; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 30px gold; }
-.shake-anim { animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) infinite both; }
-.rolling-text { margin-top: 20px; font-size: 24px; color: white; animation: blink 0.5s infinite; text-shadow: 2px 2px 0 black; }
-@keyframes shake { 10%, 90% { transform: translate3d(-2px, 0, 0) rotate(-5deg); } 20%, 80% { transform: translate3d(4px, 0, 0) rotate(5deg); } 30%, 50%, 70% { transform: translate3d(-6px, 0, 0) rotate(-5deg); } 40%, 60% { transform: translate3d(6px, 0, 0) rotate(5deg); } }
-@keyframes blink { 50% { opacity: 0; } }
-
-/* --- ARCADE --- */
-.arcade-panel { width: 800px; min-height: 500px; }
-.arcade-menu { display: flex; gap: 20px; justify-content: center; margin-top: 40px; }
-.game-card-btn { width: 140px; height: 140px; background: #212121; gap: 10px; font-size: 12px; color: white; border: 3px solid #555; }
-.game-card-btn:hover { background: #424242; border-color: gold; transform: scale(1.05); }
-.game-stage { margin-top: 10px; width: 100%; display: flex; flex-direction: column; align-items: center; }
-.game-msg { font-size: 16px; margin-top: 15px; color: gold; height: 20px; }
-.bet-controls input { width: 80px; padding: 5px; text-align: center; }
-.card-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
-.card { width: 70px; height: 90px; perspective: 1000px; cursor: pointer; }
-.card-inner { width: 100%; height: 100%; position: relative; transition: transform 0.6s; transform-style: preserve-3d; }
-.card.flipped .card-inner { transform: rotateY(180deg); }
-.card-front { background: #6a1b9a; position: absolute; width: 100%; height: 100%; backface-visibility: hidden; border: 2px solid white; display: flex; align-items: center; justify-content: center; }
-.card-back { background: white; color: black; position: absolute; width: 100%; height: 100%; backface-visibility: hidden; transform: rotateY(180deg); display: flex; align-items: center; justify-content: center; font-size: 24px; }
-.coin { width: 100px; height: 100px; position: relative; transform-style: preserve-3d; transition: transform 0.5s; }
-.side { position: absolute; width: 100%; height: 100%; border-radius: 50%; backface-visibility: hidden; border: 4px solid white; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: bold; color: #3e2723; }
-.side.heads { background: gold; } .side.tails { background: silver; transform: rotateY(180deg); }
-.coin-flip-container { margin-top: 20px; display: flex; flex-direction: column; align-items: center; gap: 20px; }
-.slot-machine-wrapper { transform: scale(1.1); margin-top: 20px; display: flex; flex-direction: column; align-items: center; }
-.slot-machine-bg { width: 220px; height: 140px; background: #d32f2f; border: 4px solid gold; border-radius: 10px; position: relative; display: flex; align-items: center; justify-content: center; }
-.reels-window { display: flex; gap: 4px; background: white; padding: 5px; border: 3px inset #555; height: 50px; align-items: center; }
-.reel { width: 35px; height: 45px; display: flex; align-items: center; justify-content: center; overflow: hidden; }
-.reel img { width: 100%; object-fit: contain; }
-.slot-handle { position: absolute; right: -25px; top: 20px; width: 15px; height: 60px; background: #555; border-radius: 4px; border: 2px solid #222; transform-origin: top center; transition: transform 0.2s; }
-.slot-handle::before { content: ''; position: absolute; top: -8px; left: -4px; width: 23px; height: 23px; background: red; border-radius: 50%; border: 2px solid #222; }
-.slot-handle.pulling { animation: pullHandle 0.5s ease-in-out; }
-@keyframes pullHandle { 0% { transform: rotateX(0); } 50% { transform: rotateX(180deg); } 100% { transform: rotateX(0); } }
-
-/* --- BOOK (Scaled) --- */
-.book-container { width: 750px; height: 500px; background: #5d4037; border: 5px double #8d6e63; display: flex; padding: 20px; color: #3e2723; position: relative; /* REQUIRED FOR CLOSE BTN */ }
-.book-page { flex: 1; padding: 10px; background: #efebe9; border: 1px solid #8d6e63; margin: 5px; display: flex; flex-direction: column; align-items: center; }
-.book-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 15px; overflow-y: auto; height: 400px; width: 100%; }
-.book-item { width: 70px; height: 70px; border: 2px solid #8d6e63; display: flex; align-items: center; justify-content: center; background: rgba(255,255,255,0.5); cursor: pointer; }
-
-/* FIX IMAGE ALIGNMENT IN GRID */
-.pixel-icon { 
-    width: 32px; height: 32px; 
-    background-size: 128px auto; 
-    image-rendering: pixelated; 
-    transform: scale(1.8); 
-    background-position: center bottom; /* KEY FIX: ALIGN BOTTOM */
-    background-repeat: no-repeat;
-}
-
-/* Detail View */
-.book-container.detail-view { width: 700px; height: 450px; }
-.cat-portrait { width: 130px; height: 130px; border: 4px solid #3e2723; margin: 10px; background-size: 400% 900%; background-position-y: -15px; }
-.stat-row { font-size: 12px; margin-bottom: 10px; width: 100%; display: flex; justify-content: space-between; border-bottom: 1px dotted #8d6e63; }
-.stat-desc { font-size: 10px; margin-top: 20px; text-align: center; }
-
-/* --- HOUSE WITH FILTER --- */
-.filter-bar {
-    display: flex; gap: 5px; margin-bottom: 10px;
-}
-.filter-bar button {
-    background: #555; font-size: 8px; padding: 5px 10px; min-width: 40px;
-}
-.filter-bar button.active {
-    background: #0288d1; border-color: gold;
-}
-
-.house-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin: 10px 0; background: #222; padding: 10px; max-height: 350px; overflow-y: auto; }
-.house-slot { border: 2px solid #555; height: 90px; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; cursor: pointer; }
-.house-slot.active { border-color: #00e676; background: rgba(0, 230, 118, 0.1); }
-.hunger-bar { width: 70%; height: 4px; background: #000; margin-top: 8px; border: 1px solid white; }
-.hunger-bar div { height: 100%; transition: width 0.5s; }
-.equipped-badge { position: absolute; top: 0; right: 0; background: #00e676; color: black; font-size: 8px; padding: 2px; }
-
-/* --- CAT VISUALS --- */
-.cat-wrapper { position: absolute; width: 32px; height: 32px; transition: left 0.5s linear; cursor: pointer; z-index: 50; }
-.Character { width: 32px; height: 32px; overflow: hidden; position: relative; transform: scale(3.5); transform-origin: bottom center; image-rendering: pixelated; }
-.Character_spritesheet { width: 128px; position: absolute; top: 0; left: 0; display: block; }
-.is-moving .Character_spritesheet { animation: moveSpritesheet 0.8s steps(4) infinite; }
-.face-right .Character_spritesheet { top: -32px; } 
-.face-left .Character_spritesheet { top: -96px; } 
-@keyframes moveSpritesheet { from { transform: translateX(0px); } to { transform: translateX(-128px); } }
-.cat-sr { filter: drop-shadow(0 0 4px cyan); }
-.cat-ssr { filter: drop-shadow(0 0 6px gold); }
-.bubble-hungry { position: absolute; top: -40px; left: 10px; background: white; padding: 4px; border-radius: 50%; font-size: 12px; animation: bounce 1s infinite; z-index: 100; border: 2px solid black; }
-.cat-think-panel { position: absolute; bottom: 100px; left: -45px; background: white; border: 2px solid black; padding: 8px; width: 130px; display: flex; flex-direction: column; gap: 5px; color: black; z-index: 200; }
-.cat-think-panel button { background-color: #1565c0; color: white; font-size: 10px; padding: 6px; text-align: left; border: 1px solid black; box-shadow: none; margin: 0; }
-.cat-think-panel button:hover { background-color: #0d47a1; }
-.claim-box { position: absolute; bottom: 20px; right: 20px; background: #2e7d32; border: 3px solid white; padding: 10px; color: white; cursor: pointer; z-index: 90; text-align: center; image-rendering: pixelated; }
-.claim-box:hover { transform: scale(1.1); }
-.mining-sparkle { position: absolute; top: -10px; right: 0; animation: riseUp 2s infinite; opacity: 0; }
-@keyframes riseUp { 0% { transform: translateY(0); opacity: 1; } 100% { transform: translateY(-20px); opacity: 0; } }
-@keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
-.settings-panel { width: 400px; }
-.setting-row { display: flex; flex-direction: column; width: 100%; text-align: left; gap: 5px; margin-bottom: 15px; color: gold; font-size: 12px; }
-
-/* --- FIX 1: CHỈNH LẠI HIỂN THỊ MÈO TRONG KHUNG (QUAN TRỌNG) --- */
-.pixel-icon { 
-    width: 32px; height: 32px; 
-    /* Giữ nguyên size gốc của sprite sheet */
-    background-size: 128px auto; 
-    image-rendering: pixelated; 
-    
-    /* Phóng to mèo lên */
-    transform: scale(2); 
-    
-    /* KEY FIX: Đưa ảnh về góc 0 0 để lấy mặt trước (Front Face) */
-    background-position: 0 0; 
-    background-repeat: no-repeat;
-    
-    /* Căn giữa div */
-    margin: auto;
-}
-
-/* --- FIX 2: NÚT X TRONG BOOK --- */
-/* Đặt vị trí tương đối cho container để nút X bám theo */
-.book-container { 
-    position: relative; 
-    /* Các thuộc tính cũ giữ nguyên */
-    width: 750px; height: 500px; background: #5d4037; border: 5px double #8d6e63; display: flex; padding: 20px; color: #3e2723; 
-}
-
-/* Chỉnh nút X nằm gọn trong góc phải */
-.book-container .btn-close {
-    top: 15px;      /* Cách lề trên */
-    right: 15px;    /* Cách lề phải */
-    width: 35px;
-    height: 35px;
-    z-index: 100;   /* Luôn nằm trên cùng */
-}
-
-/* --- FIX 3: CĂN GIỮA CHỮ GACHA --- */
-.btn-roll { 
-    width: 140px; height: 80px; 
-    background: #2e7d32; font-size: 12px; 
-    /* Dùng Flexbox để căn giữa tuyệt đối */
-    display: flex; 
-    flex-direction: column; 
-    align-items: center; 
-    justify-content: center; 
-    gap: 8px; /* Khoảng cách giữa dòng chữ và số tiền */
-    text-align: center;
-}
-.btn-roll span {
-    display: block;
-    line-height: 1.2;
-}
-
-/* --- FIX 4: HOUSE SLOT (Để mèo nằm chính giữa ô) --- */
-.house-slot { 
-    border: 2px solid #555; 
-    height: 90px; 
-    display: flex; 
-    flex-direction: column; 
-    align-items: center; 
-    justify-content: center; /* Căn giữa dọc */
-    position: relative; 
-    cursor: pointer; 
-    gap: 5px; /* Khoảng cách giữa mèo và thanh đói */
-}
 /* =========================================
-   RESPONSIVE DESIGN (MOBILE & TABLET FIXES)
+   1. GLOBAL SETTINGS & RESET
    ========================================= */
-
-/* --- 1. GLOBAL FIXES --- */
-* { box-sizing: border-box; } /* Đảm bảo padding không làm vỡ khung */
-
-/* --- 2. TABLET & SMALL LAPTOP (Max Width 1024px) --- */
-@media screen and (max-width: 1024px) {
-    .pixel-panel, .arcade-panel, .book-container, .gacha-panel {
-        width: 90vw !important; /* Chiếm 90% chiều ngang màn hình */
-        height: auto !important;
-        max-height: 85vh; /* Không cao quá màn hình */
-        overflow-y: auto; /* Nếu dài quá thì cho cuộn dọc */
-    }
+* {
+    box-sizing: border-box;
 }
 
-/* =========================================
-   RESPONSIVE DESIGN V2 (FIXED FOR IPAD & MOBILE)
-   ========================================= */
+body {
+    background-color: #1a1a1a;
+    margin: 0;
+    overflow: hidden;
+    user-select: none;
+    color: white;
+    font-family: 'Press Start 2P', cursive;
+    -webkit-font-smoothing: none;
+}
 
-/* --- 1. SỬA BACKGROUND & CONTAINER --- */
-/* Đảm bảo background luôn full màn hình bất kể thiết bị */
 .game-container {
     width: 100vw;
     height: 100vh;
-    background-size: cover; /* Ảnh luôn phủ kín */
-    background-position: center bottom; /* Căn đáy để luôn thấy đất */
-    background-attachment: fixed; /* Cố định nền khi cuộn */
+    background: url('/assets/bg_minecraft.png') no-repeat center bottom/cover;
+    position: relative;
     overflow: hidden;
 }
 
-/* --- 2. TABLET & IPAD (Màn hình từ 768px đến 1366px) --- */
-@media screen and (max-width: 1366px) {
-    
-    /* Tăng kích thước nút Top Bar cho dễ bấm trên cảm ứng */
-    .top-bar {
-        padding: 20px;
-        width: 100%;
-        box-sizing: border-box;
-    }
-    .btn-menu {
-        min-width: 90px;
-        font-size: 12px !important; /* Chữ to hơn */
-        padding: 12px;
-    }
-    .setting-btn {
-        width: 45px !important;
-        height: 45px;
-        font-size: 20px !important;
-    }
-    .stat-box {
-        font-size: 12px;
-        padding: 10px;
-    }
-
-    /* Các bảng (Panel) tự co giãn theo chiều ngang tablet */
-    .pixel-panel, .gacha-panel, .book-container, .arcade-panel {
-        width: 85vw !important; /* Chiếm 85% chiều ngang */
-        max-width: 700px; /* Không to quá mức */
-        height: auto !important;
-        max-height: 80vh; /* Tránh bị tràn màn hình dọc */
-        overflow-y: auto; /* Cho phép cuộn nội dung bên trong */
-    }
-
-    /* Chỉnh lại Grid trong House & Book */
-    .house-grid, .book-grid, .result-grid {
-        grid-template-columns: repeat(4, 1fr); /* 4 cột thay vì 5 */
-        gap: 10px;
-    }
+/* Overlay đen mờ che toàn màn hình khi mở Popup */
+.minigame-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.85);
+    z-index: 3000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
-/* --- 3. MOBILE (Điện thoại - Dưới 768px) --- */
-@media screen and (max-width: 768px) {
-    
-    /* Top Bar xếp dọc để đỡ chật */
-    .top-bar {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 10px;
-    }
-    .group-btn {
-        width: 100%;
-        justify-content: space-between;
-    }
+/* Khung giao diện chính (Gỗ nâu pixel) */
+.pixel-panel {
+    background: #3e2723;
+    border: 4px solid #fff;
+    padding: 20px;
+    text-align: center;
+    position: relative;
+    image-rendering: pixelated;
+    box-shadow: 10px 10px 0 #000;
+    width: 850px; 
+    max-width: 95vw;
+    max-height: 95vh;
+    overflow-y: auto; 
+}
 
-    /* Bảng chiếm gần hết màn hình điện thoại */
+/* =========================================
+   2. BUTTONS & UI ELEMENTS
+   ========================================= */
+button {
+    font-family: inherit;
+    cursor: pointer;
+    border: 3px solid #fff;
+    padding: 10px;
+    text-transform: uppercase;
+    font-size: 10px;
+    margin: 5px;
+    box-shadow: 4px 4px 0 #000;
+    color: white;
+    background-color: #333;
+    text-shadow: 1px 1px 0 #000;
+    transition: transform 0.1s;
+}
+
+button:active {
+    transform: translate(2px, 2px);
+    box-shadow: 1px 1px 0 #000;
+}
+
+button:disabled {
+    filter: grayscale(1);
+    cursor: not-allowed;
+}
+
+.btn-close {
+    background: #c62828;
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    width: 35px;
+    height: 35px;
+    font-size: 12px;
+    z-index: 100;
+}
+
+.btn-action {
+    background: #2e7d32;
+    width: 100%;
+    font-size: 14px;
+    padding: 15px;
+}
+
+/* =========================================
+   3. TOP BAR & TOKENS
+   ========================================= */
+.top-bar {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    padding: 15px;
+    display: flex;
+    justify-content: space-between;
+    z-index: 2000;
+    pointer-events: none; 
+}
+
+.group-btn {
+    pointer-events: auto;
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.btn-menu {
+    min-width: 80px;
+    font-size: 10px !important;
+    padding: 10px;
+}
+
+.setting-btn {
+    width: 40px !important;
+    min-width: unset;
+    text-align: center;
+    padding: 10px;
+    font-size: 16px !important;
+}
+
+.stat-box {
+    background: #212121;
+    padding: 10px 15px;
+    font-size: 10px;
+    border: 2px solid white;
+    display: flex;
+    align-items: center;
+    min-width: 80px;
+    justify-content: center;
+    box-shadow: 2px 2px 0 #000;
+}
+
+.meow-token { background: #6a1b9a; border-color: #ba68c8; }
+.fish-token { background: #0277bd; border-color: #4fc3f7; }
+
+/* =========================================
+   4. BLIND BOX (GACHA)
+   ========================================= */
+.gacha-panel {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    align-items: center;
+}
+
+.gacha-banner.blind-box {
+    width: 90%;
+    height: 200px;
+    border: 4px solid white;
+    background: radial-gradient(circle, #ffab91, #d84315);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    box-shadow: inset 0 0 20px rgba(0,0,0,0.5);
+}
+
+.blind-box-visual {
+    font-size: 100px;
+    animation: floatBox 2s infinite ease-in-out;
+    text-shadow: 4px 4px 0 #3e2723;
+}
+
+.banner-info {
+    position: absolute;
+    bottom: 5px;
+    font-size: 10px;
+    background: rgba(0,0,0,0.5);
+    padding: 5px 10px;
+    border-radius: 5px;
+}
+
+.gacha-actions {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    width: 100%;
+}
+
+.btn-roll {
+    width: 160px;
+    height: 90px;
+    background: #2e7d32;
+    font-size: 12px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+}
+
+.btn-roll.premium {
+    background: linear-gradient(to bottom, #f57f17, #fbc02d);
+    color: black;
+    border-color: gold;
+    text-shadow: none;
+}
+
+.sui-top-up {
+    background: rgba(0,0,0,0.3);
+    padding: 10px;
+    border-radius: 5px;
+}
+
+/* Result Grid */
+.result-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 15px;
+    margin: 20px 0;
+    justify-items: center;
+}
+
+.result-item {
+    width: 80px;
+    height: 100px;
+    background: white;
+    border: 3px solid black;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.item-img {
+    width: 32px;
+    height: 32px;
+    background-size: 128px auto;
+    image-rendering: pixelated;
+    transform: scale(2);
+    background-position: 0 0;
+    background-repeat: no-repeat;
+    margin-bottom: 5px;
+}
+
+.result-item.SSR { border-color: gold; box-shadow: 0 0 15px gold; }
+.result-item span { color: black; margin-top: 5px; font-weight: bold; }
+
+/* Rolling Animation Overlay */
+.rolling-container { display: flex; flex-direction: column; align-items: center; }
+.rolling-box {
+    font-size: 80px; color: gold;
+    width: 150px; height: 150px;
+    background: radial-gradient(#d84315, #bf360c);
+    border: 5px solid white;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 0 30px gold;
+}
+.shake-anim { animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) infinite both; }
+.rolling-text { margin-top: 20px; font-size: 24px; color: white; animation: blink 0.5s infinite; text-shadow: 2px 2px 0 black; }
+
+@keyframes floatBox { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+@keyframes shake { 10%, 90% { transform: translate3d(-2px, 0, 0) rotate(-5deg); } 20%, 80% { transform: translate3d(4px, 0, 0) rotate(5deg); } 30%, 50%, 70% { transform: translate3d(-6px, 0, 0) rotate(-5deg); } 40%, 60% { transform: translate3d(6px, 0, 0) rotate(5deg); } }
+@keyframes blink { 50% { opacity: 0; } }
+
+/* =========================================
+   5. HOUSE & SYNERGY
+   ========================================= */
+.synergy-dashboard-v2 {
+    display: flex;
+    flex-direction: row; 
+    justify-content: space-around;
+    background: #212121;
+    border: 3px solid #555;
+    padding: 15px;
+    margin-bottom: 20px;
+    border-radius: 8px;
+    gap: 10px;
+    width: 95%;
+    margin-left: auto; margin-right: auto;
+}
+
+.syn-card {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    border-right: 2px dashed #444;
+}
+.syn-card:last-child { border-right: none; }
+
+.syn-icon { font-size: 24px; }
+.syn-title { font-size: 9px; color: #aaa; font-weight: bold; margin-bottom: 4px; }
+.syn-value { font-size: 16px; font-weight: bold; text-shadow: 2px 2px 0 #000; }
+
+.filter-bar { display: flex; gap: 5px; margin-bottom: 15px; justify-content: center; }
+.filter-bar button { background: #555; font-size: 10px; padding: 8px 12px; min-width: 50px; }
+.filter-bar button.active { background: #0288d1; border-color: gold; }
+
+.house-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 15px;
+    margin: 10px 0;
+    background: #222;
+    padding: 15px;
+    max-height: 400px;
+    overflow-y: auto;
+    border: 2px solid #555;
+}
+
+.house-slot {
+    border: 2px solid #555;
+    height: 100px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    cursor: pointer;
+    background: #333;
+}
+.house-slot:hover { background: #444; }
+.house-slot.active { border-color: #00e676; background: rgba(0, 230, 118, 0.15); }
+
+/* Pixel Icon (Common usage) */
+.pixel-icon {
+    width: 32px; height: 32px;
+    background-size: 128px auto;
+    image-rendering: pixelated;
+    transform: scale(2); 
+    background-position: 0 0; 
+    background-repeat: no-repeat;
+    margin-bottom: 5px;
+}
+
+.hunger-bar { width: 80%; height: 6px; background: #000; margin-top: 5px; border: 1px solid white; }
+.hunger-bar div { height: 100%; transition: width 0.5s; }
+.equipped-badge { position: absolute; top: 0; right: 0; background: #00e676; color: black; font-size: 8px; padding: 3px; font-weight: bold; }
+
+/* INSPECT POPUP */
+.inspect-overlay {
+    position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+    background: rgba(0,0,0,0.6); z-index: 5000;
+    display: flex; align-items: center; justify-content: center;
+}
+.cat-inspect-card {
+    width: 400px; background: #3e2723; border: 4px solid #fff;
+    box-shadow: 10px 10px 0 #000; padding: 20px; text-align: center;
+    animation: popIn 0.2s ease-out;
+}
+.inspect-header h3 { margin: 0; color: gold; font-size: 18px; margin-bottom: 5px; }
+.inspect-body { margin: 20px 0; display: flex; align-items: center; gap: 20px; text-align: left; }
+.cat-portrait-large {
+    width: 120px; height: 120px; background-color: #212121; border: 3px solid #8d6e63;
+    background-size: 400%; background-position: 0 0;
+}
+.stats-block { flex: 1; }
+.stat-row-detail { display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 5px; border-bottom: 1px dotted #555; }
+.stat-row-detail span.pos { color: #00e676; } .stat-row-detail span.neg { color: #ff5252; } .stat-row-detail span.neu { color: #fff; }
+.inspect-footer { display: flex; gap: 10px; }
+.btn-unequip { background: #c62828 !important; }
+.btn-close-inspect { background: #555 !important; }
+
+/* =========================================
+   6. ARCADE & MINIGAMES
+   ========================================= */
+.arcade-panel { width: 900px; min-height: 550px; }
+.arcade-menu { display: flex; gap: 30px; justify-content: center; margin-top: 50px; }
+.game-card-btn {
+    width: 180px; height: 180px;
+    background: #212121;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    gap: 15px; font-size: 14px; color: white;
+    border: 4px solid #555;
+}
+.game-card-btn span { display: block; margin-top: 5px; }
+.game-card-btn:hover { background: #424242; border-color: gold; transform: scale(1.05); }
+
+.game-stage { margin-top: 20px; width: 100%; display: flex; flex-direction: column; align-items: center; transform: scale(1.1); transform-origin: top center; }
+.game-msg { font-size: 18px; margin-top: 20px; color: gold; height: 20px; text-shadow: 2px 2px 0 #000; }
+.bet-controls { display: flex; gap: 10px; margin-top: 20px; align-items: center; background: rgba(0,0,0,0.5); padding: 10px; border-radius: 10px; }
+.bet-controls input { width: 100px; padding: 8px; font-size: 16px; text-align: center; }
+
+/* Slot Machine */
+.slot-machine-wrapper { margin-bottom: 20px; }
+.slot-machine-bg { width: 260px; height: 160px; background: #d32f2f; border: 5px solid gold; border-radius: 10px; position: relative; display: flex; align-items: center; justify-content: center; }
+.reels-window { display: flex; gap: 5px; background: white; padding: 5px; border: 4px inset #555; height: 60px; align-items: center; }
+.reel { width: 45px; height: 50px; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+.reel img { width: 100%; object-fit: contain; }
+.slot-handle { position: absolute; right: -30px; top: 30px; width: 20px; height: 80px; background: #555; border-radius: 5px; border: 2px solid #222; transform-origin: top center; transition: transform 0.2s; }
+.slot-handle::before { content: ''; position: absolute; top: -10px; left: -5px; width: 30px; height: 30px; background: red; border-radius: 50%; border: 2px solid #222; }
+.slot-handle.pulling { animation: pullHandle 0.5s ease-in-out; }
+@keyframes pullHandle { 0% { transform: rotateX(0); } 50% { transform: rotateX(180deg); } 100% { transform: rotateX(0); } }
+
+/* Coin Flip */
+.coin-flip-container { display: flex; flex-direction: column; align-items: center; gap: 20px; }
+.coin { width: 140px; height: 140px; position: relative; transform-style: preserve-3d; transition: transform 0.5s; }
+.side { position: absolute; width: 100%; height: 100%; border-radius: 50%; backface-visibility: hidden; border: 6px solid white; display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: bold; color: #3e2723; }
+.side.heads { background: gold; } .side.tails { background: silver; transform: rotateY(180deg); }
+.btn-heads { background: gold; color: #3e2723; border-color: #fff8e1; width: 100px; }
+.btn-tails { background: silver; color: #3e2723; border-color: #eceff1; width: 100px; }
+@keyframes spinCoin { 0% { transform: rotateY(0deg); } 100% { transform: rotateY(360deg); } }
+
+/* Memory */
+.card-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; }
+.card { width: 80px; height: 110px; perspective: 1000px; cursor: pointer; }
+.card-inner { width: 100%; height: 100%; position: relative; transition: transform 0.6s; transform-style: preserve-3d; }
+.card.flipped .card-inner { transform: rotateY(180deg); }
+.card-front { background: #6a1b9a; position: absolute; width: 100%; height: 100%; backface-visibility: hidden; border: 3px solid white; display: flex; align-items: center; justify-content: center; }
+.card-back { background: white; color: black; position: absolute; width: 100%; height: 100%; backface-visibility: hidden; transform: rotateY(180deg); display: flex; align-items: center; justify-content: center; font-size: 35px; }
+
+/* =========================================
+   7. BOOK (COLLECTION)
+   ========================================= */
+.book-container {
+    width: 850px; height: 600px;
+    background: #5d4037;
+    border: 6px double #8d6e63;
+    display: flex; padding: 30px;
+    color: #3e2723;
+    position: relative; /* Để nút X bám vào */
+}
+
+.book-page { flex: 1; padding: 20px; background: #efebe9; border: 2px solid #8d6e63; margin: 10px; display: flex; flex-direction: column; align-items: center; }
+.book-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-top: 20px; overflow-y: auto; height: 450px; width: 100%; }
+.book-item { width: 80px; height: 80px; border: 3px solid #8d6e63; display: flex; align-items: center; justify-content: center; background: rgba(255,255,255,0.5); cursor: pointer; }
+.book-item:hover { background: #fff; }
+.book-item.locked { background: #000; opacity: 0.5; color: white; cursor: default; }
+
+/* Detail View */
+.book-container.detail-view { width: 800px; height: 500px; }
+.cat-portrait { width: 150px; height: 150px; border: 4px solid #3e2723; margin: 20px; background-size: 400% 900%; background-position: 0 0; }
+.stat-desc { font-size: 12px; margin-top: 20px; text-align: center; font-style: italic; }
+
+/* =========================================
+   8. CAT INTERACTION & GAMEPLAY
+   ========================================= */
+.cat-wrapper {
+    position: absolute;
+    width: 32px; height: 32px;
+    transition: left 0.5s linear;
+    cursor: pointer; z-index: 50;
+}
+
+.Character {
+    width: 32px; height: 32px;
+    overflow: hidden;
+    position: relative;
+    transform: scale(3.5);
+    transform-origin: bottom center;
+    image-rendering: pixelated;
+}
+
+.Character_spritesheet { width: 128px; position: absolute; top: 0; left: 0; display: block; }
+.is-moving .Character_spritesheet { animation: moveSpritesheet 0.8s steps(4) infinite; }
+.face-right .Character_spritesheet { top: -32px; }
+.face-left .Character_spritesheet { top: -96px; }
+@keyframes moveSpritesheet { from { transform: translateX(0px); } to { transform: translateX(-128px); } }
+
+/* Rare Effects */
+.cat-sr { filter: drop-shadow(0 0 4px cyan); }
+.cat-ssr { filter: drop-shadow(0 0 6px gold); }
+.bubble-hungry { position: absolute; top: -40px; left: 10px; background: white; padding: 4px; border-radius: 50%; font-size: 12px; animation: bounce 1s infinite; z-index: 100; border: 2px solid black; }
+
+/* INTERACTION PANEL (FIXED) */
+.cat-think-panel {
+    position: absolute;
+    bottom: 100%; /* Trên đầu mèo */
+    left: 50%; transform: translateX(-50%);
+    background: #fff;
+    border: 3px solid #000;
+    padding: 10px; width: 130px;
+    display: flex; flex-direction: column; gap: 5px;
+    z-index: 9999;
+    box-shadow: 4px 4px 0 rgba(0,0,0,0.5);
+    margin-bottom: 15px;
+}
+.cat-think-panel::after {
+    content: ''; position: absolute; bottom: -10px; left: 50%; transform: translateX(-50%);
+    border-width: 10px 10px 0; border-style: solid; border-color: #000 transparent transparent transparent;
+}
+.cat-think-panel div { color: #000 !important; font-weight: bold; }
+.cat-think-panel button {
+    background-color: #1976d2; color: white !important;
+    border: 1px solid #000; font-size: 9px; padding: 8px; text-align: center;
+    box-shadow: 2px 2px 0 #000; margin: 2px 0;
+}
+.cat-think-panel button:hover { background-color: #1565c0; transform: translate(1px, 1px); }
+
+/* CLAIM BUTTON */
+.claim-box {
+    position: fixed; bottom: 30px; right: 30px;
+    background: #2e7d32; border: 3px solid white;
+    padding: 15px; color: white; cursor: pointer;
+    z-index: 2500; text-align: center; image-rendering: pixelated;
+    box-shadow: 0 0 15px rgba(0,0,0,0.5); min-width: 120px;
+}
+.claim-box:hover { transform: scale(1.1); background: #1b5e20; }
+.claim-title { font-size: 10px; color: #a5d6a7; margin-bottom: 5px; }
+.claim-anim { font-size: 10px; margin-top: 5px; animation: blink 1s infinite; }
+
+.mining-sparkle { position: absolute; top: -10px; right: 0; animation: riseUp 2s infinite; opacity: 0; }
+@keyframes riseUp { 0% { transform: translateY(0); opacity: 1; } 100% { transform: translateY(-20px); opacity: 0; } }
+@keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
+@keyframes popIn { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
+.settings-panel { width: 400px; }
+.setting-row { display: flex; flex-direction: column; width: 100%; text-align: left; gap: 5px; margin-bottom: 15px; color: gold; font-size: 14px; }
+.setting-row input { cursor: pointer; }
+
+/* =========================================
+   9. RESPONSIVE DESIGN (MOBILE & TABLET)
+   ========================================= */
+@media screen and (max-width: 1366px) {
     .pixel-panel, .gacha-panel, .book-container, .arcade-panel {
-        width: 95vw !important;
-        padding: 10px;
+        width: 85vw !important; max-width: 700px;
+        height: auto !important; max-height: 85vh; overflow-y: auto;
     }
+    .house-grid, .book-grid, .result-grid { grid-template-columns: repeat(4, 1fr); gap: 10px; }
+}
 
-    /* Grid giảm còn 3 cột */
-    .house-grid, .book-grid, .result-grid {
-        grid-template-columns: repeat(3, 1fr);
-    }
-    .card-grid {
-        grid-template-columns: repeat(3, 1fr);
-    }
-
-    /* Chữ trong Blind Box */
-    .btn-roll {
-        width: 110px; 
-        font-size: 10px;
-    }
-
-    /* Book chuyển thành view dọc */
-    .book-container {
-        flex-direction: column;
-    }
-    .book-page {
-        width: 100%;
-        margin-bottom: 20px;
-    }
-
-    /* Arcade Menu dọc */
-    .arcade-menu {
-        flex-direction: column;
-    }
-    .game-card-btn {
-        width: 100%;
-        flex-direction: row;
-        height: 80px;
-        font-size: 14px;
-    }
-
-    /* Mèo trên màn hình */
-    .cat-wrapper {
-        bottom: 18% !important; /* Đẩy lên cao để không bị ngón tay che */
-    }
-    .Character {
-        transform: scale(2.5); /* Mèo nhỏ lại chút */
-    }
+@media screen and (max-width: 768px) {
+    .top-bar { flex-direction: column; gap: 10px; align-items: flex-start; }
+    .group-btn { width: 100%; justify-content: space-between; }
+    .pixel-panel, .gacha-panel, .book-container, .arcade-panel { width: 95vw !important; padding: 10px; }
     
-    /* Nút Claim to hơn */
-    .claim-box {
-        bottom: 80px; /* Đẩy lên trên các nút điều hướng ảo của điện thoại */
-        transform: scale(1.0);
-    }
+    .synergy-dashboard-v2 { flex-direction: column; width: 100%; }
+    .syn-card { border-right: none; border-bottom: 1px dashed #444; padding-bottom: 5px; width: 100%; }
+    
+    .house-grid, .book-grid, .result-grid { grid-template-columns: repeat(3, 1fr); }
+    .card-grid { grid-template-columns: repeat(3, 1fr); }
+    .book-container { flex-direction: column; }
+    .book-page { width: 100%; margin-bottom: 20px; }
+    .arcade-menu { flex-direction: column; align-items: center; }
+    .game-card-btn { width: 100%; height: 80px; flex-direction: row; font-size: 14px; }
+    .cat-wrapper { bottom: 18% !important; }
+    .Character { transform: scale(2.5); }
+    .claim-box { bottom: 80px; transform: scale(1.0); }
 }
