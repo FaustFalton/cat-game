@@ -52,9 +52,9 @@ const GEAR_DB = [
 
 // Decor Database
 const DECOR_DB = [
-    { id: 'd1', name: 'Persian Rug', cost: 500, type: 'decor', img: '/assets/decor_rug.png', style: { width: '200px' } },
-    { id: 'd2', name: 'Scratch Post', cost: 800, type: 'decor', img: '/assets/decor_post.png', style: { width: '60px' } },
-    { id: 'd3', name: 'Fish Painting', cost: 1500, type: 'decor', img: '/assets/decor_art.png', style: { width: '80px' } },
+    { id: 'd1', name: 'Taiga Plant', cost: 500, type: 'decor', img: '/assets/plant.png', style: { width: '40px' } },
+    { id: 'd2', name: 'Scratch Post', cost: 800, type: 'decor', img: '/assets/catpost.png', style: { width: '60px' } },
+    { id: 'd3', name: 'Fish Painting', cost: 1500, type: 'decor', img: '/assets/fish_painting.png', style: { width: '80px' } },
 ];
 
 const CARD_ICONS = ['🐟', '🦴', '🐭', '🦀', '🧶', '🐱'];
@@ -114,7 +114,7 @@ function App() {
   // Audio & Settings
   const bgmRef = useRef(new Audio('/assets/sounds/bgm_main.mp3'));
   const sfxRef = useRef({});
-  const [musicVol, setMusicVol] = useState(0.5);
+  const [musicVol, setMusicVol] = useState(1);
   const [sfxVol, setSfxVol] = useState(0.5);
   const [showSettings, setShowSettings] = useState(false);
 
@@ -573,10 +573,12 @@ function App() {
                         <button style={{background:'#c62828'}} onClick={()=>{clickSound(); setInteractingCatId(null)}}>X</button>
                     </div>
                 )}
-                <div className={`cat-aura`} onClick={() => {clickSound(); setInteractingCatId(interactingCatId === cat.uuid ? null : cat.uuid)}}> 
+                <div className={`cat-aura ${cat.rarity === 'SR' ? 'cat-sr' : ''} ${cat.rarity === 'SSR' ? 'cat-ssr' : ''}`} 
+                onClick={() => {clickSound(); setInteractingCatId(interactingCatId === cat.uuid ? null : cat.uuid)}}> 
                     <div className={`Character ${moving ? 'is-moving' : 'is-idle'} ${(catDir[cat.uuid]||'right')==='right'?'face-right':'face-left'} `} style={{filter: isHungry ? 'grayscale(1)' : 'none'}}>
                         <img src={`/assets/cat_${cat.id}.png`} className="Character_spritesheet" alt="cat" />
-                        {cat.equippedGear && <div style={{position:'absolute', top:'-10px', right:0, fontSize:'10px'}}>{cat.equippedGear.img}</div>}
+                        {cat.equippedGear && <div style={{position:'absolute', top:'9px', left:'60%', fontSize:'7.5px', transform: 'translateX(-63%)'}}>{cat.equippedGear.img}
+                        </div>}
                     </div>
                 </div>
              </div>

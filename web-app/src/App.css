@@ -23,6 +23,7 @@ body {
     background: url('/assets/bg_minecraft.png') no-repeat center bottom/cover;
     position: relative;
     overflow: hidden;
+    background-position-y: -260px;
 }
 
 /* Overlay đen mờ che toàn màn hình khi mở Popup */
@@ -253,6 +254,7 @@ button:disabled {
 }
 
 .result-item.SSR { border-color: gold; box-shadow: 0 0 15px gold; }
+.result-item.SR {  box-shadow: 1px 0 10px rgb(72, 17, 160); border: 4px solid rgb(14, 14, 192); }
 .result-item span { color: black; margin-top: 5px; font-weight: bold; }
 
 /* Rolling Animation Overlay */
@@ -457,7 +459,7 @@ button:disabled {
     width: 32px; height: 32px;
     overflow: hidden;
     position: relative;
-    transform: scale(3.5);
+    transform: scale(4.2);
     transform-origin: bottom center;
     image-rendering: pixelated;
 }
@@ -470,7 +472,7 @@ button:disabled {
 
 /* Rare Effects */
 .cat-sr { filter: drop-shadow(0 0 4px cyan); }
-.cat-ssr { filter: drop-shadow(0 0 6px gold); }
+.cat-ssr { filter: drop-shadow(1px  0 6px rgb(255, 220, 23)); }
 .bubble-hungry { position: absolute; top: -40px; left: 10px; background: white; padding: 4px; border-radius: 50%; font-size: 12px; animation: bounce 1s infinite; z-index: 100; border: 2px solid black; }
 
 /* INTERACTION PANEL (FIXED) */
@@ -772,9 +774,9 @@ button:disabled {
     display: flex;
     align-items: center;
     gap: 10px;
-    margin-top: 10px;
+    margin-top:10px;
     background: #212121;
-    padding: 5px;
+    padding: 10px;
     border: 1px dashed #777;
 }
 .gear-slot {
@@ -784,6 +786,7 @@ button:disabled {
     display: flex; align-items: center; justify-content: center;
     cursor: pointer;
     font-size: 20px;
+
 }
 .gear-slot.filled { border-color: #00e676; }
 .gear-slot:hover { border-color: gold; }
@@ -863,7 +866,8 @@ button:disabled {
     opacity: 0.8;
     transform: scale(1.1);
     cursor: grabbing;
-    pointer-events: none; /* Quan trọng để event mousemove hoạt động mượt */
+    pointer-events: auto;
+    z-index: 6000; /* Quan trọng để event mousemove hoạt động mượt */
 }
 
 /* Btn Edit Mode Toggle (Góc trên trái) */
