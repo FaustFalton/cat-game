@@ -113,7 +113,7 @@ function App() {
   // Audio & Settings
   const bgmRef = useRef(new Audio('/assets/sounds/bgm_main.mp3'));
   const sfxRef = useRef({});
-  const [musicVol, setMusicVol] = useState(0.5);
+  const [musicVol, setMusicVol] = useState(1);
   const [sfxVol, setSfxVol] = useState(0.5);
   const [showSettings, setShowSettings] = useState(false);
 
