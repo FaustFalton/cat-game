@@ -114,7 +114,7 @@ function App() {
   // Audio & Settings
   const bgmRef = useRef(new Audio('/assets/sounds/bgm_main.mp3'));
   const sfxRef = useRef({});
-  const [musicVol, setMusicVol] = useState(1);
+  const [musicVol, setMusicVol] = useState(0.5);
   const [sfxVol, setSfxVol] = useState(0.5);
   const [showSettings, setShowSettings] = useState(false);
 
@@ -234,38 +234,62 @@ function App() {
     return () => clearInterval(interval);
   }, [equippedIds, movingCats, catDir]);
 
-  // --- DRAG & DROP DECOR LOGIC ---
+// --- DRAG & DROP DECOR LOGIC (FIXED) ---
+  
   const handleDragStart = (e, uuid, fromInventory = false) => {
+      // Chỉ cho phép kéo khi bật Edit Mode
       if (!isEditMode) return;
-      e.stopPropagation();
-      const startX = e.clientX; const startY = e.clientY;
+      
+      e.preventDefault(); // Ngăn trình duyệt kéo ảnh (ghost image)
+      e.stopPropagation(); // Ngăn sự kiện click lan ra background
+
+      // Nếu kéo từ thanh Inventory (tạo mới)
       if (fromInventory) {
-          // If dragging from bar, create new placed item
           const baseItem = inventory.find(i => i.uuid === uuid);
-          if(baseItem) {
-            const newItem = { ...baseItem, x: startX, y: startY };
-            setPlacedDecor(prev => [...prev, newItem]);
+          if (baseItem) {
+              // Kiểm tra xem item này đã được đặt chưa (tránh dupe nếu logic inventory không ẩn nó)
+              const isAlreadyPlaced = placedDecor.some(p => p.uuid === uuid);
+              if(!isAlreadyPlaced) {
+                  const newItem = { 
+                      ...baseItem, 
+                      x: e.clientX, 
+                      y: e.clientY 
+                  };
+                  setPlacedDecor(prev => [...prev, newItem]);
+              }
           }
       }
+      
+      // Đặt ID đang kéo để kích hoạt handleMouseMove
       setDraggedDecorId(uuid);
   };
 
   const handleMouseMove = (e) => {
+      // Nếu không phải edit mode hoặc không có item nào đang được giữ chuột thì bỏ qua
       if (!isEditMode || !draggedDecorId) return;
+      
+      e.preventDefault();
+
       setPlacedDecor(prev => prev.map(item => {
           if (item.uuid === draggedDecorId) {
+              // Cập nhật tọa độ theo chuột
               return { ...item, x: e.clientX, y: e.clientY };
           }
           return item;
       }));
   };
 
-  const handleMouseUp = () => { setDraggedDecorId(null); };
+  const handleMouseUp = () => { 
+      setDraggedDecorId(null); 
+  };
 
-  const handleDecorDoubleClick = (uuid) => {
+  const handleDecorDoubleClick = (e, uuid) => {
       if (!isEditMode) return;
-      playSfx('ui_click.mp3');
-      setPlacedDecor(prev => prev.filter(p => p.uuid !== uuid)); // Remove from screen (returns to bar)
+      e.stopPropagation(); // Quan trọng: Ngăn click lan ra ngoài
+      playSfx('break.mp3'); // Âm thanh xóa (tùy chọn)
+      
+      // Xóa khỏi placedDecor -> Nó sẽ tự động hiện lại trong Inventory bar nhờ logic render của bạn
+      setPlacedDecor(prev => prev.filter(p => p.uuid !== uuid)); 
   };
 
   
@@ -482,10 +506,19 @@ function App() {
         {/* EDIT MODE TOGGLE */}
         <button className={`btn-edit-mode ${isEditMode ? 'active' : ''}`} onClick={()=>{clickSound(); setIsEditMode(!isEditMode)}}>{isEditMode ? '✅ SAVE LAYOUT' : '🛠 EDIT HOUSE'}</button>
 
-        {/* DECOR LAYER */}
+{/* DECOR LAYER */}
         <div className={`decor-layer ${isEditMode ? 'is-editing' : ''}`}>
             {placedDecor.map((item) => (
-                <img key={item.uuid} src={item.img} className={`decor-placed ${draggedDecorId === item.uuid ? 'dragging' : ''}`} style={{ left: item.x, top: item.y, width: item.style?.width || '64px' }} alt="d" onMouseDown={(e) => handleDragStart(e, item.uuid)} onDoubleClick={() => handleDecorDoubleClick(item.uuid)} />
+                <img 
+                    key={item.uuid} 
+                    src={item.img} 
+                    className={`decor-placed ${draggedDecorId === item.uuid ? 'dragging' : ''}`} 
+                    // Style quan trọng: transform translate để tâm ảnh nằm giữa chuột
+                    style={{ left: item.x, top: item.y, width: item.style?.width || '64px', transform: 'translate(-50%, -50%)' }} 
+                    alt="d" 
+                    onMouseDown={(e) => handleDragStart(e, item.uuid, false)} // False: Kéo item đã có
+                    onDoubleClick={(e) => handleDecorDoubleClick(e, item.uuid)} // Truyền e vào
+                />
             ))}
         </div>
 
