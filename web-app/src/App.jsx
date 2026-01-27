@@ -114,7 +114,7 @@ function App() {
   const bgmRef = useRef(new Audio('/assets/sounds/bgm_main.mp3'));
   const sfxRef = useRef({});
   const [musicVol, setMusicVol] = useState(1);
-  const [sfxVol, setSfxVol] = useState(0.5);
+  const [sfxVol, setSfxVol] = useState(1);
   const [showSettings, setShowSettings] = useState(false);
 
   // Arcade State
