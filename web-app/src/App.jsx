@@ -8,9 +8,9 @@ const GAME_STORE_ID = '0x1fd26dbce4a68bb06c8bf4c8763552a7faa20085622bfecbb036cb7
 
 // Tỷ lệ đào cơ bản (chưa tính Level và Gear)
 const MINING_RATE = {
-    'R': { fish: 0.1, meow: 0.0001, label: 'Standard' },
-    'SR': { fish: 0.3, meow: 0.001, label: 'High' },
-    'SSR': { fish: 1.5, meow: 0.03, label: 'Divine' }
+    'R': { fish: 0.1, meow: 0.0001, label: 'Standard', base_drain: 0.5 }, // Tăng drain cho R (0.5/3s)
+    'SR': { fish: 0.3, meow: 0.001, label: 'High', base_drain: 0.3 },
+    'SSR': { fish: 1.5, meow: 0.03, label: 'Divine', base_drain: 0.1 }
 };
 
 // --- CORE SYSTEM: 3-AXIS PERSONALITY ---
@@ -84,9 +84,8 @@ function App() {
   });
 
   // --- NEW FEATURES STATE ---
-  const [activeShopTab, setActiveShopTab] = useState('box'); // 'box', 'gear', 'decor'
+  const [activeShopTab, setActiveShopTab] = useState('box');
   
-  // Placed Decor: Array of { uuid, id, x, y, img }
   const [placedDecor, setPlacedDecor] = useState(() => JSON.parse(localStorage.getItem('placedDecor') || '[]'));
   const [isEditMode, setIsEditMode] = useState(false);
   const [draggedDecorId, setDraggedDecorId] = useState(null);
@@ -157,7 +156,7 @@ function App() {
       const audio = sfxRef.current[name];
       if (audio) { audio.currentTime = 0; audio.volume = sfxVol; audio.play().catch(()=>{}); }
   };
-  const clickSound = () => playSfx('ui_click.mp3');
+  const clickSound = () => playSfx('ui_click.mpm3');
 
   // --- 3-AXIS SYNERGY CALCULATION ---
   useEffect(() => {
@@ -174,7 +173,7 @@ function App() {
       setTeamStats({ w: totalW, c: totalC, e: totalE, label });
   }, [equippedIds, inventory]);
 
-  // --- MINING LOOP (Levels + Gear + Energy) ---
+  // --- MINING LOOP (Levels + Gear + Energy + Drain Logic) ---
   useEffect(() => {
       const miningTick = setInterval(() => {
           setInventory(prevInv => {
@@ -184,24 +183,33 @@ function App() {
                   if (equippedIds.includes(cat.uuid)) {
                       if (cat.hunger > 0) {
                           const rates = MINING_RATE[cat.rarity] || MINING_RATE['R'];
+                          
                           // 1. Level Multiplier
                           const levelMult = 1 + ((cat.level || 1) * 0.1); 
+                          
                           // 2. Synergy Bonus (Energy)
                           const energyBonus = 1 + (teamStats.e * 0.02); 
+                          
                           // 3. Gear Logic
-                          let gearMult = 0; let hungerDrain = 0.1; let nextGear = cat.equippedGear;
+                          let gearMult = 0; 
+                          let hungerDrain = rates.base_drain; // Base drain based on rarity
+                          let nextGear = cat.equippedGear;
+
                           if (nextGear) {
                               gearMult = nextGear.boost;
-                              hungerDrain += nextGear.drain; 
+                              hungerDrain += nextGear.drain; // Gear adds drain
+                              
                               nextGear = { ...nextGear, durability: nextGear.durability - nextGear.fragility };
                               if (nextGear.durability <= 0) { nextGear = null; anyGearBroke = true; }
                           }
+
                           // Final Formula
                           let tickFish = rates.fish * levelMult * energyBonus * (1 + gearMult);
                           if (Math.random() < (teamStats.c * 0.05)) tickFish *= 2; // Chaos Crit
 
                           earnedFish += tickFish;
                           if (Math.random() < rates.meow) earnedMeow += 1;
+                          
                           return { ...cat, hunger: Math.max(0, cat.hunger - hungerDrain), equippedGear: nextGear };
                       }
                   }
@@ -234,62 +242,42 @@ function App() {
     return () => clearInterval(interval);
   }, [equippedIds, movingCats, catDir]);
 
-// --- DRAG & DROP DECOR LOGIC (FIXED) ---
+// --- DRAG & DROP DECOR LOGIC ---
   
   const handleDragStart = (e, uuid, fromInventory = false) => {
-      // Chỉ cho phép kéo khi bật Edit Mode
       if (!isEditMode) return;
-      
-      e.preventDefault(); // Ngăn trình duyệt kéo ảnh (ghost image)
-      e.stopPropagation(); // Ngăn sự kiện click lan ra background
+      e.preventDefault(); 
+      e.stopPropagation(); 
 
-      // Nếu kéo từ thanh Inventory (tạo mới)
       if (fromInventory) {
           const baseItem = inventory.find(i => i.uuid === uuid);
-          if (baseItem) {
-              // Kiểm tra xem item này đã được đặt chưa (tránh dupe nếu logic inventory không ẩn nó)
-              const isAlreadyPlaced = placedDecor.some(p => p.uuid === uuid);
-              if(!isAlreadyPlaced) {
-                  const newItem = { 
-                      ...baseItem, 
-                      x: e.clientX, 
-                      y: e.clientY 
-                  };
-                  setPlacedDecor(prev => [...prev, newItem]);
-              }
+          if (baseItem && !placedDecor.some(p => p.uuid === uuid)) {
+              const newItem = { ...baseItem, x: e.clientX, y: e.clientY };
+              setPlacedDecor(prev => [...prev, newItem]);
           }
       }
-      
-      // Đặt ID đang kéo để kích hoạt handleMouseMove
       setDraggedDecorId(uuid);
   };
 
   const handleMouseMove = (e) => {
-      // Nếu không phải edit mode hoặc không có item nào đang được giữ chuột thì bỏ qua
       if (!isEditMode || !draggedDecorId) return;
-      
       e.preventDefault();
 
       setPlacedDecor(prev => prev.map(item => {
           if (item.uuid === draggedDecorId) {
-              // Cập nhật tọa độ theo chuột
               return { ...item, x: e.clientX, y: e.clientY };
           }
           return item;
       }));
   };
 
-  const handleMouseUp = () => { 
-      setDraggedDecorId(null); 
-  };
+  const handleMouseUp = () => { setDraggedDecorId(null); };
 
   const handleDecorDoubleClick = (e, uuid) => {
       if (!isEditMode) return;
-      e.stopPropagation(); // Quan trọng: Ngăn click lan ra ngoài
-      playSfx('break.mp3'); // Âm thanh xóa (tùy chọn)
-      
-      // Xóa khỏi placedDecor -> Nó sẽ tự động hiện lại trong Inventory bar nhờ logic render của bạn
-      setPlacedDecor(prev => prev.filter(p => p.uuid !== uuid)); 
+      e.stopPropagation();
+      playSfx('break.mp3');
+      setPlacedDecor(prev => prev.filter(p => p.uuid !== uuid));
   };
 
   
@@ -301,14 +289,11 @@ function App() {
     if (!account) return alert("Connect Wallet!");
     
     const tx = new Transaction(); 
-    
-    // Split 0.01 SUI from the primary gas coin. This small amount increases the chance of success.
     const [paymentCoin] = tx.splitCoins(tx.gas, [tx.pure.u64(SUI_MIST_AMOUNT_TEST)]); 
     tx.transferObjects([paymentCoin], tx.pure.address(GAME_STORE_ID)); 
     
     signAndExecute({ transaction: tx }, { 
         onSuccess: () => { 
-            // Grant the full 1000 FISH reward (as per the UX display)
             setLocalFish(p => p + 10000); 
             playSfx('game_win.mp3'); 
             alert("Payment Success! Received +1000 FISH (Simulated 1 SUI top-up)"); 
@@ -319,6 +304,7 @@ function App() {
         }
     });
   };
+
   const buyItem = (item) => {
       clickSound();
       if (localFish < item.cost) return alert("Not enough FISH!");
@@ -469,7 +455,7 @@ function App() {
                                   </div>
                                   <div style={{fontSize:'10px', flex:1}}>
                                       {inspectCat.equippedGear ? (
-                                          <><div style={{color:'gold'}}>{inspectCat.equippedGear.name}</div><div style={{color:'#00e676'}}>Dur: {inspectCat.equippedGear.durability}</div></>
+                                          <><div style={{color:'gold'}}>{inspectCat.equippedGear.name}</div><div style={{color:'#00e676'}}>Dur: {Math.round(inspectCat.equippedGear.durability)}</div></>
                                       ) : <span style={{color:'#777'}}>No Gear Equipped</span>}
                                   </div>
                               </div>
@@ -506,7 +492,7 @@ function App() {
         {/* EDIT MODE TOGGLE */}
         <button className={`btn-edit-mode ${isEditMode ? 'active' : ''}`} onClick={()=>{clickSound(); setIsEditMode(!isEditMode)}}>{isEditMode ? '✅ SAVE LAYOUT' : '🛠 EDIT HOUSE'}</button>
 
-{/* DECOR LAYER */}
+        {/* DECOR LAYER */}
         <div className={`decor-layer ${isEditMode ? 'is-editing' : ''}`}>
             {placedDecor.map((item) => (
                 <img 
@@ -516,8 +502,8 @@ function App() {
                     // Style quan trọng: transform translate để tâm ảnh nằm giữa chuột
                     style={{ left: item.x, top: item.y, width: item.style?.width || '64px', transform: 'translate(-50%, -50%)' }} 
                     alt="d" 
-                    onMouseDown={(e) => handleDragStart(e, item.uuid, false)} // False: Kéo item đã có
-                    onDoubleClick={(e) => handleDecorDoubleClick(e, item.uuid)} // Truyền e vào
+                    onMouseDown={(e) => handleDragStart(e, item.uuid, false)} 
+                    onDoubleClick={(e) => handleDecorDoubleClick(e, item.uuid)}
                 />
             ))}
         </div>
@@ -599,7 +585,8 @@ function App() {
                 {isHungry && <div className="bubble-hungry">🍖</div>}
                 {interactingCatId === cat.uuid && (
                     <div className="cat-think-panel">
-                        <div style={{fontSize:'12px', textAlign:'center', color:'black', marginBottom:'5px', fontWeight:'bold'}}>Lv.{cat.level||1}</div>
+                        {/* HIỂN THỊ HUNGER VÀ LEVEL MỚI */}
+                        <div style={{fontSize:'12px', textAlign:'center', color:'black', marginBottom:'5px', fontWeight:'bold'}}>Lv.{cat.level||1} | Hunger: {Math.round(cat.hunger)}%</div>
                         <button onClick={()=>interact('feed', cat.uuid)}>Feed 5🐟</button>
                         <button onClick={()=>interact('pet', cat.uuid)}>Pet</button>
                         <button onClick={()=>interact('wander', cat.uuid)}>{moving ? 'Stop' : 'Wander'}</button>
