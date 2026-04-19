@@ -5,53 +5,53 @@ module 0x0::cat_move {
     use sui::coin::{Self, Coin};
     use sui::sui::SUI;
     use sui::balance::{Self, Balance};
-    use sui::clock::{Self, Clock};
     use std::vector;
+    use std::string::{Self, String};
+    use sui::event;
+
+    // --- IMPORT ZK MODULE ---
+    use sui::groth16; 
 
     // --- CONFIG ---
-    // 1 SUI = 50 FISH
     const FISH_PER_SUI: u64 = 50; 
     const BLIND_BOX_COST: u64 = 160;
-    
+    const ZK_WALK_REWARD: u64 = 500; // Thưởng 500 cá cho mỗi lần verify đi bộ thành công
+
     // --- ERRORS ---
     const E_NOT_ENOUGH_FISH: u64 = 1;
-    const E_ALREADY_CLAIMED_DAILY: u64 = 2;
+    const E_INVALID_PROOF: u64 = 999;
 
-    // --- TOKENS ---
-    // MEOW: Governance Token (Fixed Supply simulation)
-    struct MEOW has drop {}
-    // FISH: In-game Currency
-    struct FISH has drop {}
+    // --- EVENTS ---
+    struct FishClaimed has copy, drop {
+        player: address,
+        amount: u64
+    }
 
     struct GameStore has key { 
         id: UID, 
         profits: Balance<SUI>,
-        meow_pool: Balance<MEOW> // Giả lập pool thưởng
     }
     
     struct Cat has key, store { 
         id: UID, 
-        name: vector<u8>, 
+        name: String, 
         breed: u8, 
-        rarity: u8, // 1: R, 2: SR, 3: SSR
-        hunger: u64, // Max 100
-        last_claim: u64 
+        rarity: u8, 
+        hunger: u64, 
+        level: u64,
+        total_steps: u64
     }
 
-    struct PlayerData has key { 
+    struct PlayerData has key, store { 
         id: UID, 
         fish_balance: u64,
-        meow_balance: u64,
-        pity_counter: u64, 
-        last_login: u64,   
-        login_streak: u64
+        pity_counter: u64,
     }
 
     fun init(ctx: &mut TxContext) {
         let shop = GameStore { 
             id: object::new(ctx), 
             profits: balance::zero(),
-            meow_pool: balance::zero() // Cần logic mint MEOW thật ở đây
         };
         transfer::share_object(shop);
     }
@@ -59,32 +59,59 @@ module 0x0::cat_move {
     public entry fun register_user(ctx: &mut TxContext) {
         let player = PlayerData {
             id: object::new(ctx), 
-            fish_balance: 50, // Starter fish
-            meow_balance: 0,
-            pity_counter: 0, 
-            last_login: 0, login_streak: 0
+            fish_balance: 50,
+            pity_counter: 0,
         };
-        // Starter Cat (Rarity 1)
         let starter_cat = Cat { 
-            id: object::new(ctx), name: b"Starter Meow", breed: 0, rarity: 1, 
-            hunger: 100, last_claim: 0
+            id: object::new(ctx), name: string::utf8(b"Starter Meow"), breed: 0, rarity: 1, 
+            hunger: 100, level: 1, total_steps: 0
         };
         transfer::transfer(player, tx_context::sender(ctx));
         transfer::public_transfer(starter_cat, tx_context::sender(ctx));
     }
 
-    // --- EXCHANGE: SUI -> FISH ---
+    // --- ZK WALKING MINIGAME: CLAIM FISH BY STEPS ---
+    // Đây là hàm mới tích hợp ZK
+    public entry fun claim_fish_with_walk(
+        player_data: &mut PlayerData,
+        vk_bytes: vector<u8>,       // Verification Key (từ Bước 1 Circom)
+        public_inputs: vector<u8>,  // Ngưỡng đi bộ (ví dụ: 5000 bước)
+        proof_bytes: vector<u8>,    // Bằng chứng bí mật từ Frontend
+        ctx: &mut TxContext
+    ) {
+        let curve = groth16::bn254(); 
+
+        // 1. Verify ZK Proof
+        let vk = groth16::prepare_verifying_key(&curve, &vk_bytes);
+        let public_inputs_struct = groth16::public_proof_inputs_from_bytes(public_inputs);
+        let proof_points_struct = groth16::proof_points_from_bytes(proof_bytes);
+
+        let is_valid = groth16::verify_groth16_proof(
+            &curve,
+            &vk,
+            &public_inputs_struct,
+            &proof_points_struct
+        );
+
+        // 2. Nếu bằng chứng đúng -> Tặng cá cho Player
+        assert!(is_valid, E_INVALID_PROOF); 
+
+        player_data.fish_balance = player_data.fish_balance + ZK_WALK_REWARD;
+
+        event::emit(FishClaimed {
+            player: tx_context::sender(ctx),
+            amount: ZK_WALK_REWARD
+        });
+    }
+
+    // --- GIỮ NGUYÊN CÁC HÀM CŨ (GACHA, BUY FISH...) ---
     public entry fun buy_fish(shop: &mut GameStore, player: &mut PlayerData, payment: Coin<SUI>) {
         let value = coin::value(&payment);
-        // 1 SUI (10^9 Mist) = 50 Fish.
-        // Formula: (Value * 50) / 10^9
         let fish_amount = (value * FISH_PER_SUI) / 1000000000; 
-        
         balance::join(&mut shop.profits, coin::into_balance(payment));
         player.fish_balance = player.fish_balance + fish_amount;
     }
 
-    // --- BLIND BOX (GACHA) ---
     public entry fun open_blind_box(player: &mut PlayerData, amount: u64, ctx: &mut TxContext) {
         let cost = amount * BLIND_BOX_COST;
         assert!(player.fish_balance >= cost, E_NOT_ENOUGH_FISH);
@@ -94,28 +121,23 @@ module 0x0::cat_move {
         while (mut_i < amount) {
             player.pity_counter = player.pity_counter + 1;
             let roll = random(ctx, 100);
-            
             let rarity; 
-            // SSR Logic
             if (player.pity_counter >= 60) { rarity = 3; player.pity_counter = 0; }
             else {
-                if (roll < 1) { rarity = 3; player.pity_counter = 0; } // 1% SSR
-                else if (roll < 6) { rarity = 2; } // 5% SR
-                else { rarity = 1; } // R
+                if (roll < 1) { rarity = 3; player.pity_counter = 0; } 
+                else if (roll < 6) { rarity = 2; } 
+                else { rarity = 1; } 
             };
-
-            let breed = random(ctx, 4); // Random visual breed
-
+            let breed = random(ctx, 4); 
             let cat = Cat { 
-                id: object::new(ctx), name: b"BlindBox Cat", breed: (breed as u8), rarity, 
-                hunger: 100, last_claim: 0 
+                id: object::new(ctx), name: string::utf8(b"BlindBox Cat"), breed: (breed as u8), rarity, 
+                hunger: 100, level: 1, total_steps: 0 
             };
             transfer::public_transfer(cat, tx_context::sender(ctx));
             mut_i = mut_i + 1;
         };
     }
 
-    // --- HELPER RANDOM ---
     fun random(ctx: &mut TxContext, max: u64): u64 {
         let uid = object::new(ctx);
         let id_bytes = object::uid_to_bytes(&uid);

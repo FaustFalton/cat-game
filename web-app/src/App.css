@@ -27,14 +27,16 @@ body {
 }
 
 /* Overlay đen mờ che toàn màn hình khi mở Popup */
+
 .minigame-overlay {
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0, 0, 0, 0.85);
-    z-index: 3000;
+    background: rgba(0, 0, 0, 0.7);
+    /* Để thấp hơn top-bar */
+    z-index: 3000; 
     display: flex;
     align-items: center;
     justify-content: center;
@@ -112,10 +114,11 @@ button:disabled {
     padding: 15px;
     display: flex;
     justify-content: space-between;
-    z-index: 2000;
-    pointer-events: none; 
+    /* Tăng lên 5000 để nó nằm trên cả cái bảng thông báo */
+    z-index: 5000; 
+    /* Cho phép bấm vào các nút bên trong */
+    pointer-events: auto; 
 }
-
 .group-btn {
     pointer-events: auto;
     display: flex;
@@ -915,3 +918,112 @@ button:disabled {
     box-shadow: 4px 4px 0 #000;
 }
 .btn-edit-mode.active { background: #00e676; color: black; border-color: black; }
+
+/* ... GIỮ NGUYÊN TẤT CẢ CODE CŨ BÊN TRÊN (ĐẾN DƯỚI ĐÂY) ... */
+
+/* =========================================
+   9. RESPONSIVE DESIGN (MOBILE & TABLET)
+   ========================================= */
+@media screen and (max-width: 1366px) {
+    /* ... Giữ nguyên phần 1366px ... */
+    .pixel-panel, .gacha-panel, .book-container, .arcade-panel {
+        width: 85vw !important; max-width: 700px;
+        height: auto !important; max-height: 85vh; overflow-y: auto;
+    }
+    .house-grid, .book-grid, .result-grid { grid-template-columns: repeat(4, 1fr); gap: 10px; }
+}
+
+/* ... CODE CŨ GIỮ NGUYÊN (TRƯỚC MEDIA QUERY) ... */
+
+@media screen and (max-width: 768px) {
+    /* --- CẤP ĐỘ GLOBAL --- */
+    .top-bar { 
+        flex-direction: column; 
+        gap: 10px; 
+        align-items: flex-start;
+        padding: 10px; /* Giảm padding */
+    }
+    
+    .group-btn { 
+        width: 100%; 
+        justify-content: space-between;
+        gap: 5px; /* Giảm khoảng cách */
+    }
+    
+    .btn-menu {
+        min-width: unset;
+        width: 25%; /* Chia 4 nút đầu tiên đều nhau */
+        font-size: 8px !important; /* Giảm cỡ chữ */
+        padding: 8px 5px;
+        margin: 0;
+    }
+    
+    .setting-btn {
+        width: 30px !important; /* Giữ kích thước nhỏ cho setting */
+        padding: 8px;
+    }
+
+    .stat-box {
+        font-size: 8px;
+        min-width: unset;
+        padding: 8px;
+    }
+    
+    .pixel-panel, .gacha-panel, .book-container, .arcade-panel { width: 95vw !important; padding: 10px; }
+    
+    .synergy-dashboard-v2 { flex-direction: column; width: 100%; }
+    .syn-card { border-right: none; border-bottom: 1px dashed #444; padding-bottom: 5px; width: 100%; }
+    
+    .house-grid, .book-grid, .result-grid { grid-template-columns: repeat(3, 1fr); gap: 8px; }
+    .card-grid { grid-template-columns: repeat(3, 1fr); }
+    .book-container { flex-direction: column; }
+    .book-page { width: 100%; margin-bottom: 20px; }
+    .arcade-menu { flex-direction: column; align-items: center; }
+    .game-card-btn { width: 100%; height: 80px; flex-direction: row; font-size: 14px; }
+    
+    /* --- CẤP ĐỘ GAMEPLAY/MÈO --- */
+    .cat-wrapper { 
+        /* Di chuyển mèo lên cao hơn một chút so với bottom: -50% của bạn, 
+           để mèo nằm sát đường chân trời khi màn hình dọc */
+        top: 80% !important; 
+        bottom: unset;
+    }
+    .Character { 
+        transform: scale(2.5); 
+    }
+    .claim-box { 
+        bottom: 80px; 
+        right: 15px; 
+        transform: scale(1.0); 
+        padding: 10px;
+        min-width: 100px;
+    }
+    
+    /* --- CẤP ĐỘ NEW FEATURES (SỬA NHÀ, STATS) --- */
+    .btn-edit-mode {
+        top: 10px;
+        left: 10px;
+        padding: 6px;
+        font-size: 7px;
+        width: 80px;
+    }
+
+    .rpg-stats-container {
+        flex-direction: column;
+        padding: 10px;
+    }
+    .rpg-synergy-badge {
+        height: 60px;
+        width: 100%;
+        margin-top: 10px;
+    }
+    .stat-label { width: 60px; font-size: 9px; }
+    .stat-number { width: 20px; }
+
+    .cat-inspect-card { width: 95vw !important; }
+    .inspect-body { flex-direction: column; gap: 10px; }
+    .cat-portrait-large { width: 100px; height: 100px; }
+
+    .decor-inventory-bar { justify-content: flex-start; }
+    .decor-slot-item { width: 50px; height: 50px; }
+}
