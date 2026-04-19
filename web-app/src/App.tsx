@@ -84,7 +84,7 @@ function App() {
       });
     } catch (e) {
       console.error(e);
-      alert("Lỗi tạo Proof. Hãy kiểm tra Console (F12) để xem chi tiết.");
+      alert("Lỗi tạo Proof. Hãy kiểm tra Console để xem chi tiết.");
     } finally {
       setIsGenerating(false);
     }
